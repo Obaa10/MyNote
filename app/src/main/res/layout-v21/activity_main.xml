@@ -13,12 +13,14 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:elevation="0dp"
         >
 
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="65dp"
             app:layout_scrollFlags="scroll|enterAlways"
+            android:elevation="4dp"
             >
 
             <TextView

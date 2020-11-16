@@ -14,16 +14,19 @@ class NoteDetails : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_note_details)
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         val saveButton: Button = findViewById(R.id.save_button)
         //   val addImageButton: Button = findViewById(R.id.add_image_button)
         val title: EditText = findViewById(R.id.detail_title)
         val description: EditText = findViewById(R.id.detail_description)
-        var first = "f"
+        var first = 0
         val intent = intent
         intent?.let {
+            first=it.getIntExtra("id",0)
             val detailArray = it.getStringArrayExtra(EXTRA_REPLY)
             detailArray?.let {
-                first="e"
                 title.setText(detailArray[0])
                 description.setText(detailArray[1])
             }
@@ -36,7 +39,8 @@ class NoteDetails : AppCompatActivity() {
             } else {
                 val noteTitle = title.text.toString()
                 val noteDetails = description.text.toString()
-                val array = arrayOf<String>(noteTitle, noteDetails,"e")
+                val array = arrayOf<String>(noteTitle, noteDetails)
+                replyIntent.putExtra("id",first)
                 replyIntent.putExtra(EXTRA_REPLY, array)
                 setResult(Activity.RESULT_OK, replyIntent)
             }

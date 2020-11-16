@@ -45,17 +45,21 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, intentData)
 
         if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK) {
+            val id = intentData?.getIntExtra("id",1)
             intentData?.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
-                val word = Note(reply[0], reply[1])
-                if(reply[2]=="f")
+                if(id == 0) {
+                    val word = Note(reply[0], reply[1])
                     noteViewModel.insert(word)
-                else
+                }
+                else {
+                    val word = Note(id,reply[0], reply[1])
                     noteViewModel.update(word)
+                }
             }
         } else {
             Toast.makeText(
                 applicationContext,
-                "empty_not_saved",
+                R.string.empty_not_saved,
                 Toast.LENGTH_LONG
             ).show()
         }
