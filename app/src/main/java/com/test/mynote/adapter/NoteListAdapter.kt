@@ -28,9 +28,7 @@ class NoteListAdapter() : ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_CO
         //holder.itemView.setOnLongClickListener { }
         holder.itemView.setOnClickListener {
             val intent = Intent(it.context, NoteDetails::class.java)
-            val array = arrayOf<String>(note.title,note.detail)
-            intent.putExtra("id",note.id)
-            intent.putExtra(NoteDetails.EXTRA_REPLY,array)
+            intent.putExtra(NoteDetails.EXTRA_REPLY_ID,note.id)
             it.context.startActivity(intent)
         }
     }

@@ -25,11 +25,12 @@ class MainActivity : AppCompatActivity() {
 
         val recyclerView: RecyclerView = findViewById(R.id.notes_list)
         recyclerView.layoutManager =
-            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
         val recyclerViewAdapter = NoteListAdapter()
         recyclerView.adapter = recyclerViewAdapter
 
         noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
+
         noteViewModel.allNote.observe(this) { notes ->
             notes.let { recyclerViewAdapter.submitList(it) }
         }
@@ -45,16 +46,9 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, intentData)
 
         if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK) {
-            val id = intentData?.getIntExtra("id",1)
             intentData?.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
-                if(id == 0) {
-                    val word = Note(reply[0], reply[1])
-                    noteViewModel.insert(word)
-                }
-                else {
-                    val word = Note(id,reply[0], reply[1])
-                    noteViewModel.update(word)
-                }
+                val note = Note(reply[0], reply[1])
+                noteViewModel.insert(note)
             }
         } else {
             Toast.makeText(
