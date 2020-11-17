@@ -13,7 +13,6 @@
         android:layout_height="match_parent"
         android:paddingStart="10dp"
         android:paddingTop="10dp"
-        android:paddingEnd="10dp"
         android:paddingBottom="10dp">
 
         <TextView
@@ -22,6 +21,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/description"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,7 +33,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:text="Description"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView"
             app:layout_constraintTop_toBottomOf="@+id/title" />
 

@@ -28,7 +28,7 @@ class NoteListAdapter() : ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_CO
         //holder.itemView.setOnLongClickListener { }
         holder.itemView.setOnClickListener {
             val intent = Intent(it.context, NoteDetails::class.java)
-            intent.putExtra(NoteDetails.EXTRA_REPLY_ID,note.id)
+            intent.putExtra(NoteDetails.EXTRA_REPLY_ID, note.id)
             it.context.startActivity(intent)
         }
     }
@@ -43,16 +43,16 @@ class NoteListAdapter() : ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_CO
         }
     }
 
-companion object {
-    private val NOTES_COMPARATOR = object : DiffUtil.ItemCallback<Note>() {
-        override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
-            return oldItem.title == newItem.title
-        }
+    companion object {
+        private val NOTES_COMPARATOR = object : DiffUtil.ItemCallback<Note>() {
+            override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
+                return oldItem.title == newItem.title
+            }
 
-        override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
-            return oldItem == newItem
+            override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
+                return oldItem == newItem
+            }
         }
     }
-}
 
 }

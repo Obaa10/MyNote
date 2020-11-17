@@ -2,4 +2,6 @@
     <string name="app_name">MyNote</string>
     <string name="note_detail">Don\'t Save</string>
     <string name="empty_not_saved">Empty Not Saved</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Delete</string>
 </resources>

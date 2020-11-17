@@ -5,13 +5,12 @@ import androidx.lifecycle.*
 import com.test.mynote.database.Note
 import com.test.mynote.database.NoteRoomDatabase
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 
-class NoteViewModel (val application : Application) : ViewModel() {
+class NoteViewModel(val application: Application) : ViewModel() {
 
     private val noteRoomDatabase = NoteRoomDatabase.getDatabase(application)
     private val dao = noteRoomDatabase.noteDao()
-    var allNote : LiveData<List<Note>?>
+    var allNote: LiveData<List<Note>?>
 
     init {
         allNote = dao.getAllNote().asLiveData()
@@ -22,13 +21,15 @@ class NoteViewModel (val application : Application) : ViewModel() {
             dao.insert(note)
         }
     }
+
     fun getNote(noteId: Int) = dao.getNote(noteId).asLiveData()
-    fun update(note: Note){
+    fun update(note: Note) {
         viewModelScope.launch {
             dao.updateNote(note)
         }
     }
-    fun delete(note :Note){
+
+    fun delete(note: Note) {
         viewModelScope.launch {
             dao.delete(note.id)
         }

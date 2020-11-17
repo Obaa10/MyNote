@@ -1,8 +1,9 @@
 package com.test.mynote.database
 
-import android.icu.text.CaseMap
-import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 
@@ -16,7 +17,7 @@ interface NoteDao {
     suspend fun updateNote(note: Note)
 
     @Query("SELECT *  FROM note_table")
-     fun getAllNote(): Flow<List<Note>?>
+    fun getAllNote(): Flow<List<Note>?>
 
     @Query("DELETE FROM note_table")
     suspend fun deleteAll()
@@ -25,5 +26,5 @@ interface NoteDao {
     suspend fun delete(key: Int)
 
     @Query("Select * from note_table WHERE id = :key")
-    fun getNote(key :Int): Flow<Note>
+    fun getNote(key: Int): Flow<Note>
 }
