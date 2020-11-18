@@ -78,7 +78,7 @@ class NoteDetails : AppCompatActivity() {
 
         //delete note
         deleteButton.setOnClickListener {
-            val builder: AlertDialog.Builder? = this?.let { it ->
+            val builder: AlertDialog.Builder? = this.let { it ->
                 val builder = AlertDialog.Builder(it)
                 builder.apply {
                     setPositiveButton(R.string.ok,
