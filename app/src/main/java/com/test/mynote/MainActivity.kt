@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
             notes.let { recyclerViewAdapter.submitList(it) }
         }
 
+
         addButton.setOnClickListener {
             val intent = Intent(this, NoteDetails::class.java)
             startActivityForResult(intent, newNoteActivityRequestCode)
@@ -49,13 +50,15 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, intentData: Intent?) {
         super.onActivityResult(requestCode, resultCode, intentData)
         if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK) {
-            intentData?.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
-                val note = Note(reply[0], reply[1])
-                noteViewModel.insert(note)
+            val isDelete = intentData?.getBooleanExtra("delete", false)!!
+            if (!isDelete) {
+                intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
+                    val note = Note(reply[0], reply[1])
+                    noteViewModel.insert(note)
+                }
             }
         } else {
             Toast.makeText(

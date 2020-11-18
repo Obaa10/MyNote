@@ -37,7 +37,7 @@ class NoteDetails : AppCompatActivity() {
         val intent = intent
         var isEmpty = true
         var noteId = 0
-        var noteObserver: Observer<Note>
+        var noteObserver: Observer<Note>? = null
 
 
         //insert note
@@ -79,10 +79,11 @@ class NoteDetails : AppCompatActivity() {
             val replyIntent = Intent()
             if (TextUtils.isEmpty(title.text)) {
                 setResult(Activity.RESULT_CANCELED, replyIntent)
-            } else {
-                noteViewModel.getNote(noteId).removeObserver(noteObserver)
-                noteViewModel.delete(noteId)
+            } else if (noteObserver != null) {
+                replyIntent.putExtra("delete",true)
                 setResult(Activity.RESULT_OK, replyIntent)
+                noteViewModel.delete(noteId)
+                noteViewModel.getNote(noteId).removeObserver(noteObserver!!)
             }
             finish()
         }
