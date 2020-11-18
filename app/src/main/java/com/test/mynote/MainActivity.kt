@@ -19,32 +19,39 @@ class MainActivity : AppCompatActivity() {
     private val newNoteActivityRequestCode = 1
     lateinit var noteViewModel: NoteViewModel
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
+        val addButton: FloatingActionButton = findViewById(R.id.add_button)
+
+        //Define the recyclerView and it's adapter
         val recyclerView: RecyclerView = findViewById(R.id.notes_list)
         recyclerView.layoutManager =
-            StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
+            StaggeredGridLayoutManager(
+                2
+                , StaggeredGridLayoutManager.VERTICAL
+            )
         val recyclerViewAdapter = NoteListAdapter()
         recyclerView.adapter = recyclerViewAdapter
 
-        noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
 
         noteViewModel.allNote.observe(this) { notes ->
             notes.let { recyclerViewAdapter.submitList(it) }
         }
 
-        val addButton: FloatingActionButton = findViewById(R.id.add_button)
         addButton.setOnClickListener {
             val intent = Intent(this, NoteDetails::class.java)
             startActivityForResult(intent, newNoteActivityRequestCode)
         }
     }
 
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, intentData: Intent?) {
         super.onActivityResult(requestCode, resultCode, intentData)
-
         if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK) {
             intentData?.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
                 val note = Note(reply[0], reply[1])

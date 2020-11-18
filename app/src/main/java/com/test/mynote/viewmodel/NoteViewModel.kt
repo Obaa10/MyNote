@@ -6,12 +6,16 @@ import com.test.mynote.database.Note
 import com.test.mynote.database.NoteRoomDatabase
 import kotlinx.coroutines.launch
 
-class NoteViewModel(val application: Application) : ViewModel() {
+class NoteViewModel(private val application: Application) : ViewModel() {
 
+    //get an instance of the RoomDatabase
     private val noteRoomDatabase = NoteRoomDatabase.getDatabase(application)
     private val dao = noteRoomDatabase.noteDao()
+
+    //List represent all the user's notes
     var allNote: LiveData<List<Note>?>
 
+    //Initialize the (allNote) List
     init {
         allNote = dao.getAllNote().asLiveData()
     }
@@ -23,18 +27,23 @@ class NoteViewModel(val application: Application) : ViewModel() {
     }
 
     fun getNote(noteId: Int) = dao.getNote(noteId).asLiveData()
+
     fun update(note: Note) {
         viewModelScope.launch {
             dao.updateNote(note)
         }
     }
 
-    fun delete(note: Note) {
+    fun delete(id: Int) {
         viewModelScope.launch {
-            dao.delete(note.id)
+            dao.delete(id)
         }
     }
 }
+
+
+
+
 
 class NoteViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
