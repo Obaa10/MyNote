@@ -2,8 +2,8 @@
     <string name="app_name">MyNote</string>
     <string name="note_detail">Don\'t Save</string>
     <string name="empty_not_saved">Empty Not Saved</string>
-    <string name="ok">Ok</string>
-    <string name="cancel">Delete</string>
+    <string name="ok">Delete</string>
+    <string name="cancel">No!</string>
     <string name="dialog_title">Delete !</string>
     <string name="dialog_message">Are you sure to delete?</string>
 </resources>
