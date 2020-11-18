@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -39,18 +40,18 @@ class NoteDetails : AppCompatActivity() {
         val intent = intent
         var isEmpty = true
         var noteId = 0
-
+        var noteLiveData : LiveData<Note>? = null
 
         //insert note
         intent?.let {
             noteId = intent.getIntExtra(EXTRA_REPLY_ID, 0)
             if (noteId > 0) {
-                val noteObserver = noteViewModel.getNote(noteId).observe(this) {
+                noteLiveData = noteViewModel.getNote(noteId)
+                noteLiveData!!.observe(this) {
                     isEmpty = false
                     title.setText(it.title)
                     description.setText(it.detail)
                 }
-                noteViewModel.getNote(noteId).removeObserver(noteObserver)
             }
         }
 
@@ -85,10 +86,13 @@ class NoteDetails : AppCompatActivity() {
                             val replyIntent = Intent()
                             if (TextUtils.isEmpty(title.text)) {
                                 setResult(Activity.RESULT_CANCELED, replyIntent)
-                            } else  {
-                                replyIntent.putExtra("delete",true)
-                                noteViewModel.delete(noteId)
-                                setResult(Activity.RESULT_OK, replyIntent)
+                            } else {
+                                replyIntent.putExtra("delete", true)
+                                if (noteLiveData!!.hasObservers()) {
+                                    noteLiveData!!.removeObservers(this@NoteDetails)
+                                    noteViewModel.delete(noteId)
+                                    setResult(Activity.RESULT_OK, replyIntent)
+                                }
                             }
                             finish()
                         })
