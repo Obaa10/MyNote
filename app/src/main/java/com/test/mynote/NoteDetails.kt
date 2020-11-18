@@ -57,7 +57,6 @@ class NoteDetails : AppCompatActivity() {
 
         //save or update the note
         saveButton.setOnClickListener {
-            /*
             val replyIntent = Intent()
             if (TextUtils.isEmpty(title.text)) {
                 setResult(Activity.RESULT_CANCELED, replyIntent)
@@ -75,8 +74,6 @@ class NoteDetails : AppCompatActivity() {
                 }
             }
             finish()
-
-             */
         }
 
         //delete note
@@ -103,7 +100,6 @@ class NoteDetails : AppCompatActivity() {
                         })
                 }
             }
-
             builder?.setMessage(R.string.dialog_message)
                 ?.setTitle(R.string.dialog_title)
             val dialog: AlertDialog? = builder?.create()
