@@ -4,4 +4,6 @@
     <string name="empty_not_saved">Empty Not Saved</string>
     <string name="ok">Ok</string>
     <string name="cancel">Delete</string>
+    <string name="dialog_title">Delete !</string>
+    <string name="dialog_message">Are you sure to delete?</string>
 </resources>

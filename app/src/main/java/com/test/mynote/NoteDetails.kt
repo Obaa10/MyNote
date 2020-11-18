@@ -1,11 +1,13 @@
 package com.test.mynote
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
@@ -55,6 +57,7 @@ class NoteDetails : AppCompatActivity() {
 
         //save or update the note
         saveButton.setOnClickListener {
+            /*
             val replyIntent = Intent()
             if (TextUtils.isEmpty(title.text)) {
                 setResult(Activity.RESULT_CANCELED, replyIntent)
@@ -72,20 +75,39 @@ class NoteDetails : AppCompatActivity() {
                 }
             }
             finish()
+
+             */
         }
 
         //delete note
         deleteButton.setOnClickListener {
-            val replyIntent = Intent()
-            if (TextUtils.isEmpty(title.text)) {
-                setResult(Activity.RESULT_CANCELED, replyIntent)
-            } else if (noteObserver != null) {
-                replyIntent.putExtra("delete",true)
-                setResult(Activity.RESULT_OK, replyIntent)
-                noteViewModel.delete(noteId)
-                noteViewModel.getNote(noteId).removeObserver(noteObserver!!)
+            val builder: AlertDialog.Builder? = this?.let {
+                val builder = AlertDialog.Builder(it)
+                builder.apply {
+                    setPositiveButton(R.string.ok,
+                        DialogInterface.OnClickListener { dialog, id ->
+                            val replyIntent = Intent()
+                            if (TextUtils.isEmpty(title.text)) {
+                                setResult(Activity.RESULT_CANCELED, replyIntent)
+                            } else if (noteObserver != null) {
+                                replyIntent.putExtra("delete",true)
+                                setResult(Activity.RESULT_OK, replyIntent)
+                                noteViewModel.delete(noteId)
+                                noteViewModel.getNote(noteId).removeObserver(noteObserver!!)
+                            }
+                            finish()
+                        })
+                    setNegativeButton(R.string.cancel,
+                        DialogInterface.OnClickListener { dialog, id ->
+                            // User cancelled the dialog
+                        })
+                }
             }
-            finish()
+
+            builder?.setMessage(R.string.dialog_message)
+                ?.setTitle(R.string.dialog_title)
+            val dialog: AlertDialog? = builder?.create()
+            dialog!!.show()
         }
     }
 }
