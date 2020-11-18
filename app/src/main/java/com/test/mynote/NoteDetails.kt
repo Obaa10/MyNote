@@ -78,7 +78,7 @@ class NoteDetails : AppCompatActivity() {
 
         //delete note
         deleteButton.setOnClickListener {
-            val builder: AlertDialog.Builder? = this?.let {
+            val builder: AlertDialog.Builder? = this?.let { it ->
                 val builder = AlertDialog.Builder(it)
                 builder.apply {
                     setPositiveButton(R.string.ok,
@@ -88,11 +88,13 @@ class NoteDetails : AppCompatActivity() {
                                 setResult(Activity.RESULT_CANCELED, replyIntent)
                             } else {
                                 replyIntent.putExtra("delete", true)
-                                if (noteLiveData!!.hasObservers()) {
-                                    noteLiveData!!.removeObservers(this@NoteDetails)
-                                    noteViewModel.delete(noteId)
-                                    setResult(Activity.RESULT_OK, replyIntent)
+                                noteLiveData?.let {
+                                    if (it.hasObservers()) {
+                                        noteLiveData!!.removeObservers(this@NoteDetails)
+                                        setResult(Activity.RESULT_OK, replyIntent)
+                                    }
                                 }
+                                noteViewModel.delete(noteId)
                             }
                             finish()
                         })
