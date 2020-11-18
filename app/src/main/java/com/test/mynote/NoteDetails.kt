@@ -39,19 +39,18 @@ class NoteDetails : AppCompatActivity() {
         val intent = intent
         var isEmpty = true
         var noteId = 0
-        var noteObserver: Observer<Note>? = null
 
 
         //insert note
         intent?.let {
             noteId = intent.getIntExtra(EXTRA_REPLY_ID, 0)
             if (noteId > 0) {
-                noteObserver = noteViewModel.getNote(noteId).observe(this) {
+                val noteObserver = noteViewModel.getNote(noteId).observe(this) {
                     isEmpty = false
                     title.setText(it.title)
                     description.setText(it.detail)
                 }
-
+                noteViewModel.getNote(noteId).removeObserver(noteObserver)
             }
         }
 
@@ -86,11 +85,10 @@ class NoteDetails : AppCompatActivity() {
                             val replyIntent = Intent()
                             if (TextUtils.isEmpty(title.text)) {
                                 setResult(Activity.RESULT_CANCELED, replyIntent)
-                            } else if (noteObserver != null) {
+                            } else  {
                                 replyIntent.putExtra("delete",true)
-                                setResult(Activity.RESULT_OK, replyIntent)
                                 noteViewModel.delete(noteId)
-                                noteViewModel.getNote(noteId).removeObserver(noteObserver!!)
+                                setResult(Activity.RESULT_OK, replyIntent)
                             }
                             finish()
                         })
