@@ -3,22 +3,28 @@ package com.test.mynote
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.os.ParcelFileDescriptor
 import android.text.TextUtils
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
-
+import java.io.FileDescriptor
 
 class NoteDetails : AppCompatActivity() {
+
+    lateinit var noteImage: ImageView
 
     companion object {
         const val EXTRA_REPLY = "NoteTitle"
@@ -33,14 +39,17 @@ class NoteDetails : AppCompatActivity() {
 
 
         val saveButton: Button = findViewById(R.id.save_button)
-        val deleteButton: FloatingActionButton = findViewById(R.id.add_image_button)
+        val deleteButton: FloatingActionButton = findViewById(R.id.delete_button)
+        val addImageButton: FloatingActionButton = findViewById(R.id.add_image_button)
+        noteImage = findViewById(R.id.imageView2)
         val title: EditText = findViewById(R.id.detail_title)
         val description: EditText = findViewById(R.id.detail_description)
         val noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
         val intent = intent
         var isEmpty = true
         var noteId = 0
-        var noteLiveData : LiveData<Note>? = null
+        var noteLiveData: LiveData<Note>? = null
+
 
         //insert note
         intent?.let {
@@ -51,6 +60,8 @@ class NoteDetails : AppCompatActivity() {
                     isEmpty = false
                     title.setText(it.title)
                     description.setText(it.detail)
+                    //    if (it.image.isNotEmpty())
+                    //      noteImage.setImageURI(Uri.parse(it.image))
                 }
             }
         }
@@ -109,8 +120,35 @@ class NoteDetails : AppCompatActivity() {
             val dialog: AlertDialog? = builder?.create()
             dialog!!.show()
         }
+
+        //insert image
+        addImageButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                type = "image/*"
+            }
+                startActivityForResult(intent, 2)
+        }
+    }
+
+    protected override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && data!=null) {
+            //val thumbnail: Bitmap = data.getParcelableExtra("data")as Bitmap
+            val fullPhotoUri: Uri? = data.data
+            val parcelFileDescriptor : ParcelFileDescriptor? =
+                fullPhotoUri?.let { contentResolver.openFileDescriptor(it,"r") }
+            parcelFileDescriptor?.let {
+                val fileDescriptor : FileDescriptor = parcelFileDescriptor.fileDescriptor
+                val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                noteImage.setImageBitmap(original)
+            }
+
+       //     noteImage.setImageBitmap(thumbnail)
+        }
     }
 }
+
+
 //get image from the mobile as (Bitmap or Uri)
 /*
  fun selectImage() {

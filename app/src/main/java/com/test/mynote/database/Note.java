@@ -13,7 +13,7 @@ public class Note {
     @ColumnInfo(name = "detail")
     public String detail;
     @ColumnInfo(name = "image")
-    public String image;
+    public String image = "" ;
 
     public Note(String title, String detail) {
         this.title = title;
