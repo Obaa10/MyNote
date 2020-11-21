@@ -37,18 +37,15 @@ class MainActivity : AppCompatActivity() {
         val recyclerViewAdapter = NoteListAdapter()
         recyclerView.adapter = recyclerViewAdapter
 
-
         noteViewModel.allNote.observe(this) { notes ->
             notes.let { recyclerViewAdapter.submitList(it) }
         }
-
 
         addButton.setOnClickListener {
             val intent = Intent(this, NoteDetails::class.java)
             startActivityForResult(intent, 1)
         }
     }
-
 
     protected override fun onActivityResult(
         requestCode: Int,

@@ -6,4 +6,7 @@
     <string name="cancel">No</string>
     <string name="dialog_title">Delete !</string>
     <string name="dialog_message">Are you sure to delete?</string>
+    <string name="save">Save</string>
+    <string name="title">Title</string>
+    <string name="details">Details</string>
 </resources>

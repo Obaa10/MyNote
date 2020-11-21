@@ -17,6 +17,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.observe
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.squareup.picasso.Picasso
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
@@ -62,12 +63,14 @@ class NoteDetails : AppCompatActivity() {
                     title.setText(it.title)
                     description.setText(it.detail)
                     if (it.image.isNotEmpty()) {
+                        fullPhotoUri = it.image.toUri()
                         val parcelFileDescriptor: ParcelFileDescriptor? =
                             contentResolver.openFileDescriptor(it.image.toUri(), "r")
                         parcelFileDescriptor?.let {
                             val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
                             val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-                            noteImage.setImageBitmap(original)
+                            Picasso.get().load(fullPhotoUri).resize(300, 200).onlyScaleDown()
+                                .centerInside().into(noteImage)
                         }
                     }
                 }
@@ -99,7 +102,7 @@ class NoteDetails : AppCompatActivity() {
 
         //delete note
         deleteButton.setOnClickListener {
-            val builder: AlertDialog.Builder? = this.let { it ->
+            val builder: AlertDialog.Builder? = this.let {
                 val builder = AlertDialog.Builder(it)
                 builder.apply {
                     setPositiveButton(R.string.ok,
@@ -133,11 +136,12 @@ class NoteDetails : AppCompatActivity() {
 
         //insert image
         addImageButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            val intent1 = Intent(Intent.ACTION_GET_CONTENT).apply {
                 type = "image/*"
             }
-            startActivityForResult(intent, 2)
+            startActivityForResult(intent1, 2)
         }
+
     }
 
     protected override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -154,4 +158,3 @@ class NoteDetails : AppCompatActivity() {
         }
     }
 }
-
