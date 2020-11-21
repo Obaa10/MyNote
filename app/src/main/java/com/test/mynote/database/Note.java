@@ -20,10 +20,11 @@ public class Note {
         this.detail = detail;
     }
 
-    public Note(Integer id, String title, String detail) {
+    public Note(Integer id, String title, String detail,String image) {
         this.id = id;
         this.title = title;
         this.detail = detail;
+        this.image = image;
     }
 
     public Note(String title, String detail, String image) {

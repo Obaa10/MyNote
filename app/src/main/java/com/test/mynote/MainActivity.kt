@@ -2,8 +2,6 @@ package com.test.mynote
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -52,28 +50,26 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    protected override fun onActivityResult(requestCode: Int, resultCode: Int, intentData: Intent?) {
+    protected override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        intentData: Intent?
+    ) {
         super.onActivityResult(requestCode, resultCode, intentData)
-        var imageUri: String? = null
-            if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK) {
-                val isDelete = intentData?.getBooleanExtra("delete", false)!!
-                if (!isDelete) {
-                    intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
-                        if (imageUri != null) {
-                            val note = Note(reply[0], reply[1], imageUri)
-                            noteViewModel.insert(note)
-                        } else {
-                            val note = Note(reply[0], reply[1])
-                            noteViewModel.insert(note)
-                        }
-                    }
+        if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK) {
+            val isDelete = intentData?.getBooleanExtra("delete", false)!!
+            if (!isDelete) {
+                intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
+                    val note = Note(reply[0], reply[1], reply[2])
+                    noteViewModel.insert(note)
                 }
-            } else {
-                Toast.makeText(
-                    applicationContext,
-                    R.string.empty_not_saved,
-                    Toast.LENGTH_LONG
-                ).show()
             }
+        } else {
+            Toast.makeText(
+                applicationContext,
+                R.string.empty_not_saved,
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 }

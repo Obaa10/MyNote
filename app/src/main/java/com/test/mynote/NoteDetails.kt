@@ -3,7 +3,6 @@ package com.test.mynote
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +13,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.observe
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -25,6 +25,7 @@ import java.io.FileDescriptor
 class NoteDetails : AppCompatActivity() {
 
     lateinit var noteImage: ImageView
+    var fullPhotoUri: Uri? = null
 
     companion object {
         const val EXTRA_REPLY = "NoteTitle"
@@ -60,8 +61,15 @@ class NoteDetails : AppCompatActivity() {
                     isEmpty = false
                     title.setText(it.title)
                     description.setText(it.detail)
-                    //    if (it.image.isNotEmpty())
-                    //      noteImage.setImageURI(Uri.parse(it.image))
+                    if (it.image.isNotEmpty()) {
+                        val parcelFileDescriptor: ParcelFileDescriptor? =
+                            contentResolver.openFileDescriptor(it.image.toUri(), "r")
+                        parcelFileDescriptor?.let {
+                            val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
+                            val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                            noteImage.setImageBitmap(original)
+                        }
+                    }
                 }
             }
         }
@@ -75,13 +83,15 @@ class NoteDetails : AppCompatActivity() {
                 if (isEmpty) {
                     val noteTitle = title.text.toString()
                     val noteDetails = description.text.toString()
-                    val array = arrayOf<String>(noteTitle, noteDetails)
+                    val imageUri: String = fullPhotoUri.toString()
+                    val array: Array<String> = arrayOf(noteTitle, noteDetails, imageUri)
                     replyIntent.putExtra(EXTRA_REPLY, array)
                     setResult(Activity.RESULT_OK, replyIntent)
                 } else {
                     val noteTitle = title.text.toString()
                     val noteDetails = description.text.toString()
-                    noteViewModel.update(Note(noteId, noteTitle, noteDetails))
+                    val imageUri: String = fullPhotoUri.toString()
+                    noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri))
                 }
             }
             finish()
@@ -126,24 +136,21 @@ class NoteDetails : AppCompatActivity() {
             val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
                 type = "image/*"
             }
-                startActivityForResult(intent, 2)
+            startActivityForResult(intent, 2)
         }
     }
 
     protected override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && data!=null) {
-            //val thumbnail: Bitmap = data.getParcelableExtra("data")as Bitmap
-            val fullPhotoUri: Uri? = data.data
-            val parcelFileDescriptor : ParcelFileDescriptor? =
-                fullPhotoUri?.let { contentResolver.openFileDescriptor(it,"r") }
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            fullPhotoUri = data.data
+            val parcelFileDescriptor: ParcelFileDescriptor? =
+                fullPhotoUri?.let { contentResolver.openFileDescriptor(it, "r") }
             parcelFileDescriptor?.let {
-                val fileDescriptor : FileDescriptor = parcelFileDescriptor.fileDescriptor
+                val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
                 val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
                 noteImage.setImageBitmap(original)
             }
-
-       //     noteImage.setImageBitmap(thumbnail)
         }
     }
 }
