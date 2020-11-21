@@ -69,7 +69,7 @@ class NoteDetails : AppCompatActivity() {
                         parcelFileDescriptor?.let {
                             val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
                             val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-                            Picasso.get().load(fullPhotoUri).resize(300, 200).onlyScaleDown()
+                            Picasso.get().load(fullPhotoUri).resize(600, 400).onlyScaleDown()
                                 .centerInside().into(noteImage)
                         }
                     }
