@@ -83,14 +83,14 @@ class NoteDetails : AppCompatActivity() {
                 if (isEmpty) {
                     val noteTitle = title.text.toString()
                     val noteDetails = description.text.toString()
-                    val imageUri: String = fullPhotoUri.toString()
+                    val imageUri: String = fullPhotoUri?.toString() ?: ""
                     val array: Array<String> = arrayOf(noteTitle, noteDetails, imageUri)
                     replyIntent.putExtra(EXTRA_REPLY, array)
                     setResult(Activity.RESULT_OK, replyIntent)
                 } else {
                     val noteTitle = title.text.toString()
                     val noteDetails = description.text.toString()
-                    val imageUri: String = fullPhotoUri.toString()
+                    val imageUri: String = fullPhotoUri?.toString() ?: ""
                     noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri))
                 }
             }
@@ -155,17 +155,3 @@ class NoteDetails : AppCompatActivity() {
     }
 }
 
-
-//get image from the mobile as (Bitmap or Uri)
-/*
- fun selectImage() {
-      val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-          type = "image/*"
-      }
-      if (intent.resolveActivity(packageManager) != null) {
-          val encodeByte: ByteArray = Base64.decode(imageUr, Base64.DEFAULT)
-          val bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
-          startActivityForResult(intent, REQUEST_IMAGE_GET)
-      }
-    }
- */
