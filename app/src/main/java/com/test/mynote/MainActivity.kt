@@ -3,6 +3,8 @@ package com.test.mynote
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.observe
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
         val addButton: FloatingActionButton = findViewById(R.id.add_button)
+        val imageView : TextView = findViewById(R.id.no_note_to_show)
 
         //Define the recyclerView and it's adapter
         val recyclerView: RecyclerView = findViewById(R.id.notes_list)
@@ -38,7 +41,13 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = recyclerViewAdapter
 
         noteViewModel.allNote.observe(this) { notes ->
-            notes.let { recyclerViewAdapter.submitList(it) }
+            notes.let {
+                recyclerViewAdapter.submitList(it)
+                if(it?.size !=0)
+                    imageView.visibility= View.INVISIBLE
+                else
+                    imageView.visibility= View.VISIBLE
+            }
         }
 
         addButton.setOnClickListener {

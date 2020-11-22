@@ -26,7 +26,7 @@ import java.io.FileDescriptor
 class NoteDetails : AppCompatActivity() {
 
     lateinit var noteImage: ImageView
-    var fullPhotoUri: Uri? = null
+    private var fullPhotoUri: Uri? = null
 
     companion object {
         const val EXTRA_REPLY = "NoteTitle"
@@ -64,14 +64,8 @@ class NoteDetails : AppCompatActivity() {
                     description.setText(it.detail)
                     if (it.image.isNotEmpty()) {
                         fullPhotoUri = it.image.toUri()
-                        val parcelFileDescriptor: ParcelFileDescriptor? =
-                            contentResolver.openFileDescriptor(it.image.toUri(), "r")
-                        parcelFileDescriptor?.let {
-                            val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
-                            val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
                             Picasso.get().load(fullPhotoUri).resize(600, 400).onlyScaleDown()
                                 .centerInside().into(noteImage)
-                        }
                     }
                 }
             }

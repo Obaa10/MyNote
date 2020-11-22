@@ -4,11 +4,14 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import com.test.mynote.NoteDetails
 import com.test.mynote.R
 import com.test.mynote.database.Note
@@ -37,9 +40,16 @@ class NoteListAdapter() : ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_CO
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.title)
         val description: TextView = view.findViewById(R.id.description)
+        val image : ImageView = view.findViewById(R.id.card_image)
         fun create(note: Note) {
             title.text = note.title
             description.text = note.detail
+            image.setImageDrawable(null)
+            if(note.image.isNotEmpty())
+                Picasso.get().load(note.image.toUri()).resize(400,300)
+                    .onlyScaleDown().centerInside().into(image)
+            else
+                image.setImageDrawable(null)
         }
     }
 
