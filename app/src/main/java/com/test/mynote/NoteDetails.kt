@@ -150,24 +150,9 @@ class NoteDetails : AppCompatActivity() {
                 builder.apply {
                     setPositiveButton(R.string.ok,
                         DialogInterface.OnClickListener { dialog, id ->
-                            val replyIntent = Intent()
-                            if (TextUtils.isEmpty(title.text)) {
-                                setResult(Activity.RESULT_CANCELED, replyIntent)
-                            } else {
-                                replyIntent.putExtra("delete", true)
-                                noteLiveData?.let {
-                                    if (it.hasObservers()) {
-                                        noteLiveData!!.removeObservers(this@NoteDetails)
-                                        setResult(Activity.RESULT_OK, replyIntent)
-                                    }
-                                }
-                                noteViewModel.delete(noteId)
-                            }
-                            finish()
                         })
                     setNegativeButton(R.string.cancel,
                         DialogInterface.OnClickListener { dialog, id ->
-                            // User cancelled the dialog
                         })
                 }
             }

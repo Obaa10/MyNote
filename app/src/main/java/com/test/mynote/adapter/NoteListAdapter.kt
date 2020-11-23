@@ -42,8 +42,24 @@ class NoteListAdapter(val noteViewModel: NoteViewModel) : ListAdapter<Note, Note
             it.context.startActivity(intent)
         }
 
-        holder.button.setOnClickListener {
-            noteViewModel.delete(note.id)
+        holder.button.setOnClickListener {view->
+            val builder: AlertDialog.Builder? = this.let {
+                val builder = AlertDialog.Builder(view.context)
+                builder.apply {
+                    setPositiveButton(R.string.ok,
+                        DialogInterface.OnClickListener { dialog, id ->
+                            noteViewModel.delete(note.id)
+                        })
+                    setNegativeButton(R.string.cancel,
+                        DialogInterface.OnClickListener { dialog, id ->
+                        })
+                }
+            }
+            builder?.setMessage(R.string.dialog_message)
+                ?.setTitle(R.string.dialog_title)
+            val dialog: AlertDialog? = builder?.create()
+            dialog!!.show()
+
         }
     }
 
