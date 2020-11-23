@@ -67,7 +67,7 @@ class NoteDetails : AppCompatActivity() {
                     description.setText(it.detail)
                     if (it.image.isNotEmpty()) {
                         fullPhotoUri = it.image.toUri()
-                        Picasso.get().load(fullPhotoUri).resize(600, 400).onlyScaleDown()
+                        Picasso.get().load(fullPhotoUri).resize(0, noteImage.width).onlyScaleDown()
                             .centerInside().into(noteImage)
                     }
                 }
@@ -104,7 +104,9 @@ class NoteDetails : AppCompatActivity() {
 
         //insert image
         addImageButton.setOnClickListener {
-            val intent1 = Intent(Intent.ACTION_GET_CONTENT).apply {
+            val intent1 = Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI).
+            apply {
                 type = "image/*"
             }
             startActivityForResult(intent1, 2)
