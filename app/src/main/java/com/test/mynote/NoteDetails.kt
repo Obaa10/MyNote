@@ -1,7 +1,8 @@
 package com.test.mynote
 
 import android.app.Activity
-import android.content.DialogInterface
+import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -11,7 +12,6 @@ import android.text.TextUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
@@ -22,6 +22,8 @@ import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
 import java.io.FileDescriptor
+import java.util.*
+
 
 class NoteDetails : AppCompatActivity() {
 
@@ -51,6 +53,7 @@ class NoteDetails : AppCompatActivity() {
         var isEmpty = true
         var noteId = 0
         var noteLiveData: LiveData<Note>? = null
+        val date = arrayListOf<Int>(0,0,0)
 
 
         //insert note
@@ -64,8 +67,8 @@ class NoteDetails : AppCompatActivity() {
                     description.setText(it.detail)
                     if (it.image.isNotEmpty()) {
                         fullPhotoUri = it.image.toUri()
-                            Picasso.get().load(fullPhotoUri).resize(600, 400).onlyScaleDown()
-                                .centerInside().into(noteImage)
+                        Picasso.get().load(fullPhotoUri).resize(600, 400).onlyScaleDown()
+                            .centerInside().into(noteImage)
                     }
                 }
             }
@@ -83,20 +86,66 @@ class NoteDetails : AppCompatActivity() {
                     val imageUri: String = fullPhotoUri?.toString() ?: ""
                     val array: Array<String> = arrayOf(noteTitle, noteDetails, imageUri)
                     replyIntent.putExtra(EXTRA_REPLY, array)
+                    replyIntent.putExtra("date",date)
                     setResult(Activity.RESULT_OK, replyIntent)
                 } else {
                     val noteTitle = title.text.toString()
                     val noteDetails = description.text.toString()
                     val imageUri: String = fullPhotoUri?.toString() ?: ""
-                    noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri))
+                    if(date[0]!=0)
+                        noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri,date))
+                    else
+                        noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri))
+
                 }
             }
             finish()
         }
 
+        //insert image
+        addImageButton.setOnClickListener {
+            val intent1 = Intent(Intent.ACTION_GET_CONTENT).apply {
+                type = "image/*"
+            }
+            startActivityForResult(intent1, 2)
+        }
+
         //delete note
         deleteButton.setOnClickListener {
-            val builder: AlertDialog.Builder? = this.let {
+            val c = Calendar.getInstance()
+            val year = c.get(Calendar.YEAR)
+            val month = c.get(Calendar.MONTH)
+            val day = c.get(Calendar.DAY_OF_MONTH)
+            val datetime = DatePickerDialog(
+                this,
+                OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                    date[0]=year
+                    date[1]=monthOfYear
+                    date[2]=dayOfMonth
+                }, year, month, day
+            )
+            datetime.show()
+        }
+    }
+
+    protected override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            fullPhotoUri = data.data
+            val parcelFileDescriptor: ParcelFileDescriptor? =
+                fullPhotoUri?.let { contentResolver.openFileDescriptor(it, "r") }
+            parcelFileDescriptor?.let {
+                val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
+                val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                noteImage.setImageBitmap(original)
+            }
+        }
+    }
+}
+
+
+/*
+  val builder: AlertDialog.Builder? = this.let {
                 val builder = AlertDialog.Builder(it)
                 builder.apply {
                     setPositiveButton(R.string.ok,
@@ -126,29 +175,4 @@ class NoteDetails : AppCompatActivity() {
                 ?.setTitle(R.string.dialog_title)
             val dialog: AlertDialog? = builder?.create()
             dialog!!.show()
-        }
-
-        //insert image
-        addImageButton.setOnClickListener {
-            val intent1 = Intent(Intent.ACTION_GET_CONTENT).apply {
-                type = "image/*"
-            }
-            startActivityForResult(intent1, 2)
-        }
-
-    }
-
-    protected override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && data != null) {
-            fullPhotoUri = data.data
-            val parcelFileDescriptor: ParcelFileDescriptor? =
-                fullPhotoUri?.let { contentResolver.openFileDescriptor(it, "r") }
-            parcelFileDescriptor?.let {
-                val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
-                val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-                noteImage.setImageBitmap(original)
-            }
-        }
-    }
-}
+ */

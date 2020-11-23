@@ -4,10 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,24 +32,25 @@ class MainActivity : AppCompatActivity() {
         noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
         val addButton: FloatingActionButton = findViewById(R.id.add_button)
         val imageView : TextView = findViewById(R.id.no_note_to_show)
+        val imageView4 : ImageView = findViewById(R.id.imageView4)
 
         //Define the recyclerView and it's adapter
         val recyclerView: RecyclerView = findViewById(R.id.notes_list)
-        recyclerView.layoutManager =
-            StaggeredGridLayoutManager(
-                2
-                , StaggeredGridLayoutManager.VERTICAL
-            )
-        val recyclerViewAdapter = NoteListAdapter()
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        val recyclerViewAdapter = NoteListAdapter(noteViewModel)
         recyclerView.adapter = recyclerViewAdapter
 
         noteViewModel.allNote.observe(this) { notes ->
             notes.let {
                 recyclerViewAdapter.submitList(it)
-                if(it?.size !=0)
-                    imageView.visibility= View.INVISIBLE
-                else
-                    imageView.visibility= View.VISIBLE
+                if(it?.size !=0) {
+                    imageView.visibility = View.INVISIBLE
+                    imageView4.visibility = View.INVISIBLE
+                }
+                else {
+                    imageView.visibility = View.VISIBLE
+                    imageView4.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -64,10 +68,17 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, intentData)
         if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK) {
             val isDelete = intentData?.getBooleanExtra("delete", false)!!
+
             if (!isDelete) {
                 intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
-                    val note = Note(reply[0], reply[1], reply[2])
-                    noteViewModel.insert(note)
+                    intentData.getIntegerArrayListExtra("date")?.let { date ->
+                        val note = if(date[0]!=0){
+                            Note(reply[0], reply[1], reply[2], date)
+                        } else{
+                            Note(reply[0], reply[1], reply[2])
+                        }
+                        noteViewModel.insert(note)
+                    }
                 }
             }
         } else {
