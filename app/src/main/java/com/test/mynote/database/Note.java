@@ -19,8 +19,12 @@ public class Note {
     public String detail;
     @ColumnInfo(name = "image")
     public String image = "" ;
-    @ColumnInfo(name = "date")
-    public String date;
+    @ColumnInfo(name = "year")
+    public Integer year;
+    @ColumnInfo(name = "month")
+    public Integer month;
+    @ColumnInfo(name = "day")
+    public Integer day;
 
     public Note(String title, String detail) {
         this.title = title;
@@ -32,9 +36,9 @@ public class Note {
         this.title = title;
         this.detail = detail;
         this.image = image;
-        this.date = date.get(0).toString() +"/"
-                + date.get(1).toString() +"/"
-                + date.get(2).toString() ;
+        year = date.get(0);
+        month = date.get(1);
+        day = date.get(2);
     }
 
     public Note(Integer id, String title, String detail,String image) {
@@ -48,9 +52,9 @@ public class Note {
         this.image = image;
         this.title = title;
         this.detail = detail;
-        this.date = date.get(0).toString() +"/"
-                + date.get(1).toString() +"/"
-                + date.get(2).toString() ;
+        year = date.get(0);
+        month = date.get(1);
+        day = date.get(2);
     }
     public Note(String title, String detail, String image) {
         this.image = image;

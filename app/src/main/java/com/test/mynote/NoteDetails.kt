@@ -54,7 +54,7 @@ class NoteDetails : AppCompatActivity() {
         var noteId = 0
         var noteLiveData: LiveData<Note>? = null
         val date = arrayListOf<Int>(0,0,0)
-
+        var addDate = false
 
         //insert note
         intent?.let {
@@ -65,6 +65,9 @@ class NoteDetails : AppCompatActivity() {
                     isEmpty = false
                     title.setText(it.title)
                     description.setText(it.detail)
+                    date[0]=it.year
+                    date[1]=it.month
+                    date[2]=it.day
                     if (it.image.isNotEmpty()) {
                         fullPhotoUri = it.image.toUri()
                         Picasso.get().load(fullPhotoUri).resize(0, noteImage.width).onlyScaleDown()
@@ -124,6 +127,7 @@ class NoteDetails : AppCompatActivity() {
                     date[0]=year
                     date[1]=monthOfYear
                     date[2]=dayOfMonth
+                    addDate=true
                 }, year, month, day
             )
             datetime.show()

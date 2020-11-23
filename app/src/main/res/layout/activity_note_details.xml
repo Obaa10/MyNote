@@ -22,6 +22,7 @@
                 android:padding="5dp">
 
                 <TextView
+                    android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/note_detail"
@@ -40,6 +41,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/save"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -60,18 +63,20 @@
             android:scrollbars="vertical"
             tools:context=".ui.NoteDetail">
 
+
             <EditText
                 android:id="@+id/detail_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:ems="10"
                 android:gravity="center_horizontal"
                 android:hint="@string/title"
-                android:inputType="textCapCharacters"
+                android:inputType="textCapSentences"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -109,7 +114,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:src="@android:drawable/ic_menu_delete"
+                android:src="@drawable/ic_baseline_calendar_today_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 

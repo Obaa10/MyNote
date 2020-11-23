@@ -69,8 +69,9 @@ class NoteListAdapter(val noteViewModel: NoteViewModel) : ListAdapter<Note, Note
         val button : Button = view.findViewById(R.id.button)
         fun create(note: Note) {
             title.text = note.title
-            if(note.date!=" /0/0/0")
-            date.text = note.date
+            if(note.year!=0)
+            date.text = note.year.toString() + "/"+ note.month.toString() + "/"+
+                    note.day.toString()
         }
     }
 
