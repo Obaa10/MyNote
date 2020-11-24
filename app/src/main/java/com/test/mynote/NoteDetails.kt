@@ -54,7 +54,6 @@ class NoteDetails : AppCompatActivity() {
         var noteId = 0
         var noteLiveData: LiveData<Note>? = null
         val date = arrayListOf<Int>(0,0,0)
-        var addDate = false
 
         //insert note
         intent?.let {
@@ -127,7 +126,6 @@ class NoteDetails : AppCompatActivity() {
                     date[0]=year
                     date[1]=monthOfYear
                     date[2]=dayOfMonth
-                    addDate=true
                 }, year, month, day
             )
             datetime.show()

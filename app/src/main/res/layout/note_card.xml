@@ -30,7 +30,6 @@
             android:layout_width="71dp"
             android:layout_height="17dp"
             android:layout_marginStart="35dp"
-            android:text="Description"
             app:layout_constraintStart_toStartOf="@+id/title"
             app:layout_constraintTop_toBottomOf="@+id/title" />
 

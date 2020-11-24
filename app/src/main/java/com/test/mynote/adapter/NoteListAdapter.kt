@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
+import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -74,6 +75,7 @@ class NoteListAdapter(val noteViewModel: NoteViewModel) : ListAdapter<Note, Note
                     note.day.toString()
         }
     }
+
 
     companion object {
         private val NOTES_COMPARATOR = object : DiffUtil.ItemCallback<Note>() {

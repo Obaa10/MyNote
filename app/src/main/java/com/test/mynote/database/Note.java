@@ -20,11 +20,11 @@ public class Note {
     @ColumnInfo(name = "image")
     public String image = "" ;
     @ColumnInfo(name = "year")
-    public Integer year;
+    public Integer year ;
     @ColumnInfo(name = "month")
-    public Integer month;
+    public Integer month ;
     @ColumnInfo(name = "day")
-    public Integer day;
+    public Integer day ;
 
     public Note(String title, String detail) {
         this.title = title;
