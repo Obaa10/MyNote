@@ -11,6 +11,12 @@
     card_view:cardCornerRadius="20dp"
     card_view:cardElevation="10dp">
 
+    <TextView
+        android:id="@+id/color"
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:background="@color/purple_200" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,6 +26,7 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:text="Title"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintStart_toStartOf="parent"

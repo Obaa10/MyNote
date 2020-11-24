@@ -72,11 +72,7 @@ class MainActivity : AppCompatActivity() {
             if (!isDelete) {
                 intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
                     intentData.getIntegerArrayListExtra("date")?.let { date ->
-                        val note =// if(date[0]!=0){
-                            Note(reply[0], reply[1], reply[2], date)
-                        //} else{
-                           // Note(reply[0], reply[1], reply[2])
-                        //}
+                        val note = Note(reply[0], reply[1], reply[2], date)
                         noteViewModel.insert(note)
                     }
                 }
@@ -85,7 +81,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(
                 applicationContext,
                 R.string.empty_not_saved,
-                Toast.LENGTH_LONG   
+                Toast.LENGTH_LONG
             ).show()
         }
     }

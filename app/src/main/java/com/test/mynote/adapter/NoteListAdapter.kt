@@ -1,27 +1,24 @@
 package com.test.mynote.adapter
 
-import android.app.Activity
-import android.app.Application
 import android.content.DialogInterface
 import android.content.Intent
-import android.text.TextUtils
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
-import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.test.mynote.NoteDetails
 import com.test.mynote.R
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
+import org.w3c.dom.Text
+import java.util.*
 
 class NoteListAdapter(val noteViewModel: NoteViewModel) : ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_COMPARATOR) {
 
@@ -68,11 +65,15 @@ class NoteListAdapter(val noteViewModel: NoteViewModel) : ListAdapter<Note, Note
         val title: TextView = view.findViewById(R.id.title)
         val date: TextView = view.findViewById(R.id.date)
         val button : Button = view.findViewById(R.id.button)
+        val cardColor : TextView = view.findViewById(R.id.color)
         fun create(note: Note) {
             title.text = note.title
             if(note.year!=0)
             date.text = note.year.toString() + "/"+ note.month.toString() + "/"+
                     note.day.toString()
+            val rnd = Random()
+            val color: Int = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+            cardColor.setBackgroundColor(color)
         }
     }
 

@@ -12,6 +12,7 @@ import android.text.TextUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
@@ -54,7 +55,7 @@ class NoteDetails : AppCompatActivity() {
         var noteId = 0
         var noteLiveData: LiveData<Note>? = null
         val date = arrayListOf<Int>(0,0,0)
-
+        val detailDate : TextView = findViewById(R.id.date_detail)
         //insert note
         intent?.let {
             noteId = intent.getIntExtra(EXTRA_REPLY_ID, 0)
@@ -64,6 +65,9 @@ class NoteDetails : AppCompatActivity() {
                     isEmpty = false
                     title.setText(it.title)
                     description.setText(it.detail)
+                    if(it.year!=0)
+                        detailDate.text = it.year.toString() + "/"+ it.month.toString() + "/"+
+                                it.day.toString()
                     date[0]=it.year
                     date[1]=it.month
                     date[2]=it.day
@@ -96,8 +100,6 @@ class NoteDetails : AppCompatActivity() {
                     val imageUri: String = fullPhotoUri?.toString() ?: ""
                     if(date[0]!=0)
                         noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri,date))
-                    else
-                        noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri))
 
                 }
             }
@@ -126,6 +128,8 @@ class NoteDetails : AppCompatActivity() {
                     date[0]=year
                     date[1]=monthOfYear
                     date[2]=dayOfMonth
+                    detailDate.text = year.toString() + "/"+ monthOfYear.toString() + "/"+
+                            dayOfMonth.toString()
                 }, year, month, day
             )
             datetime.show()
@@ -146,22 +150,3 @@ class NoteDetails : AppCompatActivity() {
         }
     }
 }
-
-
-/*
-  val builder: AlertDialog.Builder? = this.let {
-                val builder = AlertDialog.Builder(it)
-                builder.apply {
-                    setPositiveButton(R.string.ok,
-                        DialogInterface.OnClickListener { dialog, id ->
-                        })
-                    setNegativeButton(R.string.cancel,
-                        DialogInterface.OnClickListener { dialog, id ->
-                        })
-                }
-            }
-            builder?.setMessage(R.string.dialog_message)
-                ?.setTitle(R.string.dialog_title)
-            val dialog: AlertDialog? = builder?.create()
-            dialog!!.show()
- */
