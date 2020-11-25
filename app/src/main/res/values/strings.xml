@@ -10,5 +10,5 @@
     <string name="title">Title</string>
     <string name="details">Details</string>
     <string name="empty">No note to show \n To Add new note \n Press +</string>
-    <string name="date">%1$s/%2$s/%3$s</string>
+    <string name="date">%1$d hi</string>
 </resources>

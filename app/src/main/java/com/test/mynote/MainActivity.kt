@@ -67,9 +67,7 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onActivityResult(requestCode, resultCode, intentData)
         if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK) {
-            val isDelete = intentData?.getBooleanExtra("delete", false)!!
-
-            if (!isDelete) {
+            if (intentData != null) {
                 intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
                     intentData.getIntegerArrayListExtra("date")?.let { date ->
                         val note = Note(reply[0], reply[1], reply[2], date)

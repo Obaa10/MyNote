@@ -1,24 +1,24 @@
 package com.test.mynote
 
+import android.Manifest
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.text.TextUtils
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.observe
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.squareup.picasso.Picasso
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
@@ -34,6 +34,7 @@ class NoteDetails : AppCompatActivity() {
     companion object {
         const val EXTRA_REPLY = "NoteTitle"
         const val EXTRA_REPLY_ID = "NoteId"
+        private const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +57,8 @@ class NoteDetails : AppCompatActivity() {
         var noteLiveData: LiveData<Note>? = null
         val date = arrayListOf<Int>(0,0,0)
         val detailDate : TextView = findViewById(R.id.date_detail)
+
+
         //insert note
         intent?.let {
             noteId = intent.getIntExtra(EXTRA_REPLY_ID, 0)
@@ -72,9 +75,7 @@ class NoteDetails : AppCompatActivity() {
                     date[1]=it.month
                     date[2]=it.day
                     if (it.image.isNotEmpty()) {
-                        fullPhotoUri = it.image.toUri()
-                        Picasso.get().load(fullPhotoUri).resize(0, noteImage.width).onlyScaleDown()
-                            .centerInside().into(noteImage)
+                        requestRead(it)
                     }
                 }
             }
@@ -98,9 +99,7 @@ class NoteDetails : AppCompatActivity() {
                     val noteTitle = title.text.toString()
                     val noteDetails = description.text.toString()
                     val imageUri: String = fullPhotoUri?.toString() ?: ""
-                    if(date[0]!=0)
-                        noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri,date))
-
+                    noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri,date))
                 }
             }
             finish()
@@ -149,4 +148,32 @@ class NoteDetails : AppCompatActivity() {
             }
         }
     }
+
+    fun requestRead(it : Note) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE
+            )
+        } else {
+            readFile(it)
+        }
+    }
+
+    fun readFile(it: Note) {
+        fullPhotoUri = it.image.toUri()
+        val parcelFileDescriptor: ParcelFileDescriptor? =
+            fullPhotoUri?.let { contentResolver.openFileDescriptor(it, "r") }
+        parcelFileDescriptor?.let {
+            val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
+            val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+            noteImage.setImageBitmap(original)
+        }
+    }
 }
+

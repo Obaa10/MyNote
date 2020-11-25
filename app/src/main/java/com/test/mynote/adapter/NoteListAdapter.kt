@@ -68,9 +68,11 @@ class NoteListAdapter(val noteViewModel: NoteViewModel) : ListAdapter<Note, Note
         val cardColor : TextView = view.findViewById(R.id.color)
         fun create(note: Note) {
             title.text = note.title
-            if(note.year!=0)
-            date.text = note.year.toString() + "/"+ note.month.toString() + "/"+
+            if(note.month>0)
+                date.text = note.year.toString() + "/"+ note.month.toString() + "/"+
                     note.day.toString()
+            else
+                date.text=null
             val rnd = Random()
             val color: Int = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
             cardColor.setBackgroundColor(color)
