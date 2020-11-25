@@ -6,7 +6,7 @@ import com.test.mynote.database.Note
 import com.test.mynote.database.NoteRoomDatabase
 import kotlinx.coroutines.launch
 
-class NoteViewModel(private val application: Application) : ViewModel() {
+class NoteViewModel(application: Application) : ViewModel() {
 
     //get an instance of the RoomDatabase
     private val noteRoomDatabase = NoteRoomDatabase.getDatabase(application)
@@ -40,9 +40,6 @@ class NoteViewModel(private val application: Application) : ViewModel() {
         }
     }
 }
-
-
-
 
 
 class NoteViewModelFactory(private val application: Application) : ViewModelProvider.Factory {

@@ -11,7 +11,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.text.TextUtils
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -34,8 +37,10 @@ class NoteDetails : AppCompatActivity() {
     companion object {
         const val EXTRA_REPLY = "NoteTitle"
         const val EXTRA_REPLY_ID = "NoteId"
+        const val EXTRA_REPLY_DATE = "NoteDate"
         private const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,18 +50,19 @@ class NoteDetails : AppCompatActivity() {
 
 
         val saveButton: Button = findViewById(R.id.save_button)
-        val deleteButton: FloatingActionButton = findViewById(R.id.delete_button)
+        val dateButton: FloatingActionButton = findViewById(R.id.date_button)
         val addImageButton: FloatingActionButton = findViewById(R.id.add_image_button)
-        noteImage = findViewById(R.id.imageView2)
+        noteImage = findViewById(R.id.note_image)
         val title: EditText = findViewById(R.id.detail_title)
-        val description: EditText = findViewById(R.id.detail_description)
+        val detail: EditText = findViewById(R.id.detail_description)
+        val detailDate: TextView = findViewById(R.id.detail_date)
+
         val noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
         val intent = intent
         var isEmpty = true
         var noteId = 0
-        var noteLiveData: LiveData<Note>? = null
-        val date = arrayListOf<Int>(0,0,0)
-        val detailDate : TextView = findViewById(R.id.date_detail)
+        val date = arrayListOf(0, 0, 0)
+        var noteLiveData: LiveData<Note>?
 
 
         //insert note
@@ -67,15 +73,22 @@ class NoteDetails : AppCompatActivity() {
                 noteLiveData!!.observe(this) {
                     isEmpty = false
                     title.setText(it.title)
-                    description.setText(it.detail)
-                    if(it.year!=0)
-                        detailDate.text = it.year.toString() + "/"+ it.month.toString() + "/"+
+                    detail.setText(it.detail)
+                    if (it.year != 0)
+                        detailDate.text = it.year.toString() + "/" + it.month.toString() + "/" +
                                 it.day.toString()
-                    date[0]=it.year
-                    date[1]=it.month
-                    date[2]=it.day
+                    date[0] = it.year
+                    date[1] = it.month
+                    date[2] = it.day
                     if (it.image.isNotEmpty()) {
-                        requestRead(it)
+                        fullPhotoUri = it.image.toUri()
+                        val parcelFileDescriptor: ParcelFileDescriptor? =
+                            fullPhotoUri?.let { contentResolver.openFileDescriptor(it, "r") }
+                        parcelFileDescriptor?.let {
+                            val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
+                            val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                            noteImage.setImageBitmap(original)
+                        }
                     }
                 }
             }
@@ -89,17 +102,17 @@ class NoteDetails : AppCompatActivity() {
             } else {
                 if (isEmpty) {
                     val noteTitle = title.text.toString()
-                    val noteDetails = description.text.toString()
+                    val noteDetails = detail.text.toString()
                     val imageUri: String = fullPhotoUri?.toString() ?: ""
                     val array: Array<String> = arrayOf(noteTitle, noteDetails, imageUri)
                     replyIntent.putExtra(EXTRA_REPLY, array)
-                    replyIntent.putExtra("date",date)
+                    replyIntent.putExtra(EXTRA_REPLY_DATE, date)
                     setResult(Activity.RESULT_OK, replyIntent)
                 } else {
                     val noteTitle = title.text.toString()
-                    val noteDetails = description.text.toString()
+                    val noteDetails = detail.text.toString()
                     val imageUri: String = fullPhotoUri?.toString() ?: ""
-                    noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri,date))
+                    noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri, date))
                 }
             }
             finish()
@@ -107,27 +120,23 @@ class NoteDetails : AppCompatActivity() {
 
         //insert image
         addImageButton.setOnClickListener {
-            val intent1 = Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI).
-            apply {
-                type = "image/*"
-            }
-            startActivityForResult(intent1, 2)
+            requestRead()
         }
 
-        //delete note
-        deleteButton.setOnClickListener {
+        //Insert date
+        dateButton.setOnClickListener {
             val c = Calendar.getInstance()
             val year = c.get(Calendar.YEAR)
             val month = c.get(Calendar.MONTH)
             val day = c.get(Calendar.DAY_OF_MONTH)
             val datetime = DatePickerDialog(
                 this,
-                OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-                    date[0]=year
-                    date[1]=monthOfYear
-                    date[2]=dayOfMonth
-                    detailDate.text = year.toString() + "/"+ monthOfYear.toString() + "/"+
+                OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
+                    date[0] = years
+                    date[1] = monthOfYear
+                    date[2] = dayOfMonth
+                    detailDate.text = years.toString() + "/" +
+                            monthOfYear.toString() + "/" +
                             dayOfMonth.toString()
                 }, year, month, day
             )
@@ -135,7 +144,7 @@ class NoteDetails : AppCompatActivity() {
         }
     }
 
-    protected override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && data != null) {
             fullPhotoUri = data.data
@@ -149,7 +158,7 @@ class NoteDetails : AppCompatActivity() {
         }
     }
 
-    fun requestRead(it : Note) {
+    private fun requestRead() {
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_EXTERNAL_STORAGE
@@ -161,19 +170,18 @@ class NoteDetails : AppCompatActivity() {
                 MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE
             )
         } else {
-            readFile(it)
+            readFile()
         }
     }
 
-    fun readFile(it: Note) {
-        fullPhotoUri = it.image.toUri()
-        val parcelFileDescriptor: ParcelFileDescriptor? =
-            fullPhotoUri?.let { contentResolver.openFileDescriptor(it, "r") }
-        parcelFileDescriptor?.let {
-            val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
-            val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-            noteImage.setImageBitmap(original)
+    private fun readFile() {
+        val intent1 = Intent(
+            Intent.ACTION_PICK,
+            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        ).apply {
+            type = "image/*"
         }
+        startActivityForResult(intent1, 2)
     }
 }
 

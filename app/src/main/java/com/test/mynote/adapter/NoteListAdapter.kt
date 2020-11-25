@@ -1,6 +1,5 @@
 package com.test.mynote.adapter
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -17,10 +16,10 @@ import com.test.mynote.NoteDetails
 import com.test.mynote.R
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
-import org.w3c.dom.Text
 import java.util.*
 
-class NoteListAdapter(val noteViewModel: NoteViewModel) : ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_COMPARATOR) {
+class NoteListAdapter(private val noteViewModel: NoteViewModel) :
+    ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_COMPARATOR) {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -31,51 +30,61 @@ class NoteListAdapter(val noteViewModel: NoteViewModel) : ListAdapter<Note, Note
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val note = getItem(position)
-        holder.create(note)
-
-        //holder.itemView.setOnLongClickListener { }
-        holder.itemView.setOnClickListener {
-            val intent = Intent(it.context, NoteDetails::class.java)
-            intent.putExtra(NoteDetails.EXTRA_REPLY_ID, note.id)
-            it.context.startActivity(intent)
-        }
-
-        holder.button.setOnClickListener {view->
-            val builder: AlertDialog.Builder? = this.let {
-                val builder = AlertDialog.Builder(view.context)
-                builder.apply {
-                    setPositiveButton(R.string.ok,
-                        DialogInterface.OnClickListener { dialog, id ->
-                            noteViewModel.delete(note.id)
-                        })
-                    setNegativeButton(R.string.cancel,
-                        DialogInterface.OnClickListener { dialog, id ->
-                        })
-                }
-            }
-            builder?.setMessage(R.string.dialog_message)
-                ?.setTitle(R.string.dialog_title)
-            val dialog: AlertDialog? = builder?.create()
-            dialog!!.show()
-
-        }
+        holder.create(note, noteViewModel)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title: TextView = view.findViewById(R.id.title)
-        val date: TextView = view.findViewById(R.id.date)
-        val button : Button = view.findViewById(R.id.button)
-        val cardColor : TextView = view.findViewById(R.id.color)
-        fun create(note: Note) {
+        private val title: TextView = view.findViewById(R.id.title)
+        private val date: TextView = view.findViewById(R.id.date)
+        private val deleteButton: Button = view.findViewById(R.id.button)
+        private val cardColor: TextView = view.findViewById(R.id.color)
+
+        fun create(note: Note, noteViewModel: NoteViewModel) {
             title.text = note.title
-            if(note.month>0)
-                date.text = note.year.toString() + "/"+ note.month.toString() + "/"+
-                    note.day.toString()
-            else
-                date.text=null
+            date.text = if (note.month > 0) {
+                note.year.toString() + "/" + note.month.toString() + "/" +
+                        note.day.toString()
+            } else null
+
+            //Set the corner's card color
             val rnd = Random()
-            val color: Int = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+            val color: Int = Color.argb(
+                255,
+                rnd.nextInt(256),
+                rnd.nextInt(256),
+                rnd.nextInt(256)
+            )
             cardColor.setBackgroundColor(color)
+
+
+            itemView.setOnClickListener {
+                val intent = Intent(it.context, NoteDetails::class.java)
+                intent.putExtra(NoteDetails.EXTRA_REPLY_ID, note.id)
+                it.context.startActivity(intent)
+            }
+
+            deleteButton.setOnClickListener { view ->
+
+                //Set Dialog
+                val builder: AlertDialog.Builder? = this.let {
+                    val builder = AlertDialog.Builder(view.context)
+                    builder.apply {
+                        setPositiveButton(
+                            R.string.ok
+                        ) { _, _ ->
+                            noteViewModel.delete(note.id)
+                        }
+                        setNegativeButton(
+                            R.string.cancel
+                        ) { _, _ ->
+                        }
+                    }
+                }
+                builder?.setMessage(R.string.dialog_message)
+                    ?.setTitle(R.string.dialog_title)
+                val dialog: AlertDialog? = builder?.create()
+                dialog!!.show()
+            }
         }
     }
 

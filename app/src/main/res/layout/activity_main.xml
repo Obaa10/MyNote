@@ -54,7 +54,7 @@
         >
 
         <TextView
-            android:id="@+id/no_note_to_show"
+            android:id="@+id/no_note_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -63,11 +63,11 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView4"
+            app:layout_constraintTop_toBottomOf="@+id/no_note_image"
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/no_note_image"
             android:layout_width="180dp"
             android:layout_height="168dp"
             app:layout_constraintBottom_toBottomOf="parent"

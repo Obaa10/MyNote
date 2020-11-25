@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -12,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.test.mynote.adapter.NoteListAdapter
 import com.test.mynote.database.Note
@@ -22,7 +20,7 @@ import com.test.mynote.viewmodel.NoteViewModelFactory
 class MainActivity : AppCompatActivity() {
 
     private val newNoteActivityRequestCode = 1
-    lateinit var noteViewModel: NoteViewModel
+    private lateinit var noteViewModel: NoteViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,8 +29,8 @@ class MainActivity : AppCompatActivity() {
 
         noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
         val addButton: FloatingActionButton = findViewById(R.id.add_button)
-        val imageView : TextView = findViewById(R.id.no_note_to_show)
-        val imageView4 : ImageView = findViewById(R.id.imageView4)
+        val noNoteToShowText: TextView = findViewById(R.id.no_note_text)
+        val noNoteToShowImage: ImageView = findViewById(R.id.no_note_image)
 
         //Define the recyclerView and it's adapter
         val recyclerView: RecyclerView = findViewById(R.id.notes_list)
@@ -40,39 +38,39 @@ class MainActivity : AppCompatActivity() {
         val recyclerViewAdapter = NoteListAdapter(noteViewModel)
         recyclerView.adapter = recyclerViewAdapter
 
+        //Set the visibility of "noNoteToShow"
         noteViewModel.allNote.observe(this) { notes ->
             notes.let {
                 recyclerViewAdapter.submitList(it)
-                if(it?.size !=0) {
-                    imageView.visibility = View.INVISIBLE
-                    imageView4.visibility = View.INVISIBLE
-                }
-                else {
-                    imageView.visibility = View.VISIBLE
-                    imageView4.visibility = View.VISIBLE
+                if (it?.size != 0) {
+                    noNoteToShowText.visibility = View.INVISIBLE
+                    noNoteToShowImage.visibility = View.INVISIBLE
+                } else {
+                    noNoteToShowText.visibility = View.VISIBLE
+                    noNoteToShowImage.visibility = View.VISIBLE
                 }
             }
         }
 
+        //Add new note
         addButton.setOnClickListener {
             val intent = Intent(this, NoteDetails::class.java)
             startActivityForResult(intent, 1)
         }
     }
 
-    protected override fun onActivityResult(
+
+    override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
         intentData: Intent?
     ) {
         super.onActivityResult(requestCode, resultCode, intentData)
-        if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK) {
-            if (intentData != null) {
-                intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
-                    intentData.getIntegerArrayListExtra("date")?.let { date ->
-                        val note = Note(reply[0], reply[1], reply[2], date)
-                        noteViewModel.insert(note)
-                    }
+        if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK && intentData != null) {
+            intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
+                intentData.getIntegerArrayListExtra(NoteDetails.EXTRA_REPLY_DATE)?.let { date ->
+                    val note = Note(reply[0], reply[1], reply[2], date)
+                    noteViewModel.insert(note)
                 }
             }
         } else {
