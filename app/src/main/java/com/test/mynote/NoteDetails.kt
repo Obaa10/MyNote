@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.text.TextUtils
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -33,7 +34,7 @@ class NoteDetails : AppCompatActivity() {
 
     lateinit var noteImage: ImageView
     private var fullPhotoUri: Uri? = null
-
+    lateinit var removeButton: FloatingActionButton
     companion object {
         const val EXTRA_REPLY = "NoteTitle"
         const val EXTRA_REPLY_ID = "NoteId"
@@ -52,6 +53,7 @@ class NoteDetails : AppCompatActivity() {
         val saveButton: Button = findViewById(R.id.save_button)
         val dateButton: FloatingActionButton = findViewById(R.id.date_button)
         val addImageButton: FloatingActionButton = findViewById(R.id.add_image_button)
+        removeButton = findViewById(R.id.remove_image)
         noteImage = findViewById(R.id.note_image)
         val title: EditText = findViewById(R.id.detail_title)
         val detail: EditText = findViewById(R.id.detail_description)
@@ -89,6 +91,7 @@ class NoteDetails : AppCompatActivity() {
                             val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
                             noteImage.setImageBitmap(original)
                         }
+                        removeButton.visibility=View.VISIBLE
                     }
                 }
             }
@@ -142,6 +145,13 @@ class NoteDetails : AppCompatActivity() {
             )
             datetime.show()
         }
+
+        //Remove image
+        removeButton.setOnClickListener{
+            fullPhotoUri=null
+            noteImage.setImageDrawable(null)
+            removeButton.visibility=View.INVISIBLE
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -155,6 +165,7 @@ class NoteDetails : AppCompatActivity() {
                 val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
                 noteImage.setImageBitmap(original)
             }
+            removeButton.visibility=View.VISIBLE
         }
     }
 

@@ -14,7 +14,8 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="65dp">
+            android:layout_height="75dp"
+            android:background="#D65932">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -39,7 +40,9 @@
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="#FF9100"
                     android:text="@string/save"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -91,7 +94,7 @@
                     android:id="@+id/note_image"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    />
+                    android:contentDescription="@string/detail_image" />
             </FrameLayout>
 
             <EditText
@@ -130,7 +133,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
+                android:contentDescription="@string/add_date"
                 android:src="@drawable/ic_baseline_calendar_today_24"
+                app:backgroundTint="#FF9100"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -140,7 +145,22 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="16dp"
+                android:contentDescription="@string/add_image"
                 android:src="@drawable/ic_baseline_image_24"
+                app:backgroundTint="#FF9100"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/remove_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="@string/remove_image"
+                android:src="@drawable/ic_baseline_image_not_supported_24"
+                android:visibility="invisible"
+                app:backgroundTint="#FF9100"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 

@@ -14,13 +14,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="@string/start_image"
         app:srcCompat="@drawable/qwq122" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="My Note"
+        android:text="@string/my_note"
         android:textColor="#313131"
         android:textSize="30sp"
         android:textStyle="bold"

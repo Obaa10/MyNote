@@ -11,4 +11,13 @@
     <string name="details">Details</string>
     <string name="empty">No note to show \n To Add new note \n Press +</string>
     <string name="date">%1$d hi</string>
+    <string name="delete">Delete</string>
+    <string name="start_image">start image</string>
+    <string name="my_note">My Note</string>
+    <string name="detail_image">detail image</string>
+    <string name="add_date">add date</string>
+    <string name="add_image">add image</string>
+    <string name="no_note_image">no note image</string>
+    <string name="delete_note">delete note</string>
+    <string name="remove_image">remove image</string>
 </resources>
