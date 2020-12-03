@@ -2,13 +2,12 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/note_card"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="70dp"
     android:layout_margin="10dp"
     app:cardBackgroundColor="#FFFFFF"
-    card_view:cardCornerRadius="20dp"
+    card_view:cardCornerRadius="15dp"
     card_view:cardElevation="10dp">
 
     <TextView
@@ -33,21 +32,22 @@
 
         <TextView
             android:id="@+id/date"
-            android:layout_width="71dp"
+            android:layout_width="96dp"
             android:layout_height="17dp"
             android:layout_marginStart="35dp"
             app:layout_constraintStart_toStartOf="@+id/title"
             app:layout_constraintTop_toBottomOf="@+id/title" />
 
-        <Button
+        <ImageButton
             android:id="@+id/button"
-            android:layout_width="106dp"
+            android:layout_width="50dp"
             android:layout_height="42dp"
-            android:background="#BF1E9797"
-            android:text="@string/delete"
+            android:background="#001E9797"
+            android:contentDescription="@string/delete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/title"
+            android:src="@drawable/ic_baseline_delete_24"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,7 +38,8 @@ class MainActivity : AppCompatActivity() {
         val recyclerViewAdapter = NoteListAdapter(noteViewModel)
         recyclerView.adapter = recyclerViewAdapter
 
-        //Set the visibility of "noNoteToShow"
+
+        //Set the visibility of "noNoteToShow" && Observe the movie list
         noteViewModel.allNote.observe(this) { notes ->
             notes.let {
                 recyclerViewAdapter.submitList(it)
@@ -69,7 +70,8 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK && intentData != null) {
             intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
                 intentData.getIntegerArrayListExtra(NoteDetails.EXTRA_REPLY_DATE)?.let { date ->
-                    val note = Note(reply[0], reply[1], reply[2], date)
+                    val image = intentData.getStringArrayListExtra("image")?: arrayListOf("")
+                    val note = Note(reply[0], reply[1], image, date)
                     noteViewModel.insert(note)
                 }
             }

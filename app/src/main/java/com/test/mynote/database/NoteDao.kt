@@ -19,6 +19,9 @@ interface NoteDao {
     @Query("SELECT *  FROM note_table")
     fun getAllNote(): Flow<List<Note>?>
 
+    @Query("SELECT images  FROM note_table WHERE id =:key")
+    fun getImage(key: Int): Flow<List<String>?>
+
     @Query("DELETE FROM note_table")
     suspend fun deleteAll()
 

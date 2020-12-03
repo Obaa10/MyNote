@@ -6,23 +6,28 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.text.TextUtils
-import android.view.View
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.test.mynote.adapter.ImageAdapter
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
@@ -32,9 +37,8 @@ import java.util.*
 
 class NoteDetails : AppCompatActivity() {
 
-    lateinit var noteImage: ImageView
-    private var fullPhotoUri: Uri? = null
-    lateinit var removeButton: FloatingActionButton
+    lateinit var images: MutableLiveData<ArrayList<String>>
+
     companion object {
         const val EXTRA_REPLY = "NoteTitle"
         const val EXTRA_REPLY_ID = "NoteId"
@@ -49,12 +53,14 @@ class NoteDetails : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-
-        val saveButton: Button = findViewById(R.id.save_button)
-        val dateButton: FloatingActionButton = findViewById(R.id.date_button)
+        images = MutableLiveData(arrayListOf(""))
+        val dateButton: ImageButton = findViewById(R.id.date_button)
+        val saveButton: FloatingActionButton = findViewById(R.id.save_button)
         val addImageButton: FloatingActionButton = findViewById(R.id.add_image_button)
-        removeButton = findViewById(R.id.remove_image)
-        noteImage = findViewById(R.id.note_image)
+        val imageList: RecyclerView = findViewById(R.id.image_list)
+        imageList.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL, false)
+        val imageListAdapter = ImageAdapter()
+        imageList.adapter = imageListAdapter
         val title: EditText = findViewById(R.id.detail_title)
         val detail: EditText = findViewById(R.id.detail_description)
         val detailDate: TextView = findViewById(R.id.detail_date)
@@ -82,8 +88,11 @@ class NoteDetails : AppCompatActivity() {
                     date[0] = it.year
                     date[1] = it.month
                     date[2] = it.day
-                    if (it.image.isNotEmpty()) {
-                        fullPhotoUri = it.image.toUri()
+                    if (it.image.size > 0) {
+                        images.value = it.image
+                    }
+                    /*for(image in it.image) {
+                        fullPhotoUri = image.toUri()
                         val parcelFileDescriptor: ParcelFileDescriptor? =
                             fullPhotoUri?.let { contentResolver.openFileDescriptor(it, "r") }
                         parcelFileDescriptor?.let {
@@ -92,7 +101,7 @@ class NoteDetails : AppCompatActivity() {
                             noteImage.setImageBitmap(original)
                         }
                         removeButton.visibility=View.VISIBLE
-                    }
+                    }*/
                 }
             }
         }
@@ -106,15 +115,16 @@ class NoteDetails : AppCompatActivity() {
                 if (isEmpty) {
                     val noteTitle = title.text.toString()
                     val noteDetails = detail.text.toString()
-                    val imageUri: String = fullPhotoUri?.toString() ?: ""
-                    val array: Array<String> = arrayOf(noteTitle, noteDetails, imageUri)
+                    val imageUri: ArrayList<String> = images.value ?: arrayListOf("")
+                    val array: Array<String> = arrayOf(noteTitle, noteDetails)
                     replyIntent.putExtra(EXTRA_REPLY, array)
                     replyIntent.putExtra(EXTRA_REPLY_DATE, date)
+                    replyIntent.putExtra("image", imageUri)
                     setResult(Activity.RESULT_OK, replyIntent)
                 } else {
                     val noteTitle = title.text.toString()
                     val noteDetails = detail.text.toString()
-                    val imageUri: String = fullPhotoUri?.toString() ?: ""
+                    val imageUri: ArrayList<String> = images.value ?: arrayListOf("")
                     noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri, date))
                 }
             }
@@ -146,26 +156,40 @@ class NoteDetails : AppCompatActivity() {
             datetime.show()
         }
 
-        //Remove image
-        removeButton.setOnClickListener{
-            fullPhotoUri=null
-            noteImage.setImageDrawable(null)
-            removeButton.visibility=View.INVISIBLE
+        /* //Remove image
+         removeButton.setOnClickListener {
+             fullPhotoUri = null
+             noteImage.setImageDrawable(null)
+             removeButton.visibility = View.INVISIBLE
+         }
+ */
+
+        images.observe(this) {
+            val imageBitmap: ArrayList<Bitmap?> = arrayListOf()
+            for (image in it) {
+                if (image.isNotEmpty()) {
+                    val uri = image.toUri()
+                    val parcelFileDescriptor: ParcelFileDescriptor? =
+                        uri.let { contentResolver.openFileDescriptor(it, "r") }
+                    parcelFileDescriptor?.let {
+                        val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
+                        val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                        imageBitmap.add(original)
+                    }
+                }
+            }
+            imageListAdapter.submitList(imageBitmap.toList())
         }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && data != null) {
-            fullPhotoUri = data.data
-            val parcelFileDescriptor: ParcelFileDescriptor? =
-                fullPhotoUri?.let { contentResolver.openFileDescriptor(it, "r") }
-            parcelFileDescriptor?.let {
-                val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
-                val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-                noteImage.setImageBitmap(original)
-            }
-            removeButton.visibility=View.VISIBLE
+            val mlist = images.value?: arrayListOf("")
+            val list = arrayListOf<String>(data.data.toString())
+            list.addAll(mlist)
+            images.value = list
         }
     }
 

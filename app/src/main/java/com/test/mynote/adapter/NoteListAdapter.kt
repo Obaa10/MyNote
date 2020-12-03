@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
@@ -36,7 +37,7 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val title: TextView = view.findViewById(R.id.title)
         private val date: TextView = view.findViewById(R.id.date)
-        private val deleteButton: Button = view.findViewById(R.id.button)
+        private val deleteButton: ImageButton = view.findViewById(R.id.button)
         private val cardColor: TextView = view.findViewById(R.id.color)
 
         fun create(note: Note, noteViewModel: NoteViewModel) {

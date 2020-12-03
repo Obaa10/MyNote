@@ -15,6 +15,7 @@ class NoteViewModel(application: Application) : ViewModel() {
     //List represent all the user's notes
     var allNote: LiveData<List<Note>?>
 
+    lateinit var images : MutableLiveData<ArrayList<String>>
     //Initialize the (allNote) List
     init {
         allNote = dao.getAllNote().asLiveData()
@@ -27,6 +28,8 @@ class NoteViewModel(application: Application) : ViewModel() {
     }
 
     fun getNote(noteId: Int) = dao.getNote(noteId).asLiveData()
+
+    fun getImage(noteId: Int) = dao.getImage(noteId).asLiveData()
 
     fun update(note: Note) {
         viewModelScope.launch {
