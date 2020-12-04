@@ -71,7 +71,9 @@ class MainActivity : AppCompatActivity() {
             intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
                 intentData.getIntegerArrayListExtra(NoteDetails.EXTRA_REPLY_DATE)?.let { date ->
                     val image = intentData.getStringArrayListExtra("image")?: arrayListOf("")
-                    val note = Note(reply[0], reply[1], image, date)
+                    val important = date[3]
+                    date.removeAt(3)
+                    val note = Note(reply[0], reply[1], image, date,important)
                     noteViewModel.insert(note)
                 }
             }

@@ -14,7 +14,7 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="75dp"
+            android:layout_height="56dp"
             android:background="#D65932">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -82,23 +82,22 @@
                 <RadioButton
                     android:id="@+id/radio_1"
                     style="@style/Widget.AppCompat.CompoundButton.RadioButton"
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="false"
-                    android:text="importent" />
+                    android:text="@string/normal" />
 
                 <RadioButton
                     android:id="@+id/radio_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="very importent" />
+                    android:text="@string/important" />
 
                 <RadioButton
                     android:id="@+id/radio_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="deadly importent" />
+                    android:text="@string/very_important" />
             </RadioGroup>
 
             <androidx.recyclerview.widget.RecyclerView

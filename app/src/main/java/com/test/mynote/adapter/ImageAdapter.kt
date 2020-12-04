@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.test.mynote.NoteDetails
 import com.test.mynote.R
 
 class ImageAdapter() :
@@ -25,6 +26,11 @@ class ImageAdapter() :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val image = getItem(position)
         holder.create(image)
+        holder.removeButton.setOnClickListener {
+            holder.image.setImageDrawable(null)
+            it.visibility=View.INVISIBLE
+            NoteDetails.deleteImage.value=position
+        }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

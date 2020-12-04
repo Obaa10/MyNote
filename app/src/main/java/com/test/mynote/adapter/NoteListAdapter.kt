@@ -1,11 +1,9 @@
 package com.test.mynote.adapter
 
 import android.content.Intent
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -34,14 +32,20 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
         holder.create(note, noteViewModel)
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return super.getItemViewType(position)
+    }
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val title: TextView = view.findViewById(R.id.title)
         private val date: TextView = view.findViewById(R.id.date)
+        private val detail: TextView = view.findViewById(R.id.card_detail)
         private val deleteButton: ImageButton = view.findViewById(R.id.button)
         private val cardColor: TextView = view.findViewById(R.id.color)
 
         fun create(note: Note, noteViewModel: NoteViewModel) {
             title.text = note.title
+            detail.text = note.detail
             date.text = if (note.month > 0) {
                 note.year.toString() + "/" + note.month.toString() + "/" +
                         note.day.toString()
@@ -49,12 +53,18 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
 
             //Set the corner's card color
             val rnd = Random()
-            val color: Int = Color.argb(
+            /*val color: Int = Color.argb(
                 255,
                 rnd.nextInt(256),
                 rnd.nextInt(256),
                 rnd.nextInt(256)
-            )
+            )*/
+            val color : Int = when(note.important){
+                1-> R.color.normal
+                2-> R.color.important
+                3-> R.color.very_important
+                else->R.color.normal
+            }
             cardColor.setBackgroundColor(color)
 
 

@@ -8,18 +8,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.text.TextUtils
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -44,6 +39,7 @@ class NoteDetails : AppCompatActivity() {
         const val EXTRA_REPLY_ID = "NoteId"
         const val EXTRA_REPLY_DATE = "NoteDate"
         private const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1
+        var deleteImage: MutableLiveData<Int?> = MutableLiveData(null)
     }
 
 
@@ -57,8 +53,9 @@ class NoteDetails : AppCompatActivity() {
         val dateButton: ImageButton = findViewById(R.id.date_button)
         val saveButton: FloatingActionButton = findViewById(R.id.save_button)
         val addImageButton: FloatingActionButton = findViewById(R.id.add_image_button)
+        val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
         val imageList: RecyclerView = findViewById(R.id.image_list)
-        imageList.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL, false)
+        imageList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         val imageListAdapter = ImageAdapter()
         imageList.adapter = imageListAdapter
         val title: EditText = findViewById(R.id.detail_title)
@@ -91,6 +88,11 @@ class NoteDetails : AppCompatActivity() {
                     if (it.image.size > 0) {
                         images.value = it.image
                     }
+                    when(it.important){
+                        1-> findViewById<RadioButton>(R.id.radio_1).isChecked=true
+                        2-> findViewById<RadioButton>(R.id.radio_2).isChecked=true
+                        3-> findViewById<RadioButton>(R.id.radio_3).isChecked=true
+                    }
                     /*for(image in it.image) {
                         fullPhotoUri = image.toUri()
                         val parcelFileDescriptor: ParcelFileDescriptor? =
@@ -118,6 +120,7 @@ class NoteDetails : AppCompatActivity() {
                     val imageUri: ArrayList<String> = images.value ?: arrayListOf("")
                     val array: Array<String> = arrayOf(noteTitle, noteDetails)
                     replyIntent.putExtra(EXTRA_REPLY, array)
+                    date.add(getImportant(radioGroup))
                     replyIntent.putExtra(EXTRA_REPLY_DATE, date)
                     replyIntent.putExtra("image", imageUri)
                     setResult(Activity.RESULT_OK, replyIntent)
@@ -125,7 +128,7 @@ class NoteDetails : AppCompatActivity() {
                     val noteTitle = title.text.toString()
                     val noteDetails = detail.text.toString()
                     val imageUri: ArrayList<String> = images.value ?: arrayListOf("")
-                    noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri, date))
+                    noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri, date, getImportant(radioGroup)))
                 }
             }
             finish()
@@ -164,6 +167,11 @@ class NoteDetails : AppCompatActivity() {
          }
  */
 
+        deleteImage.observe(this) {
+            if (images.value != null && it != null)
+                images.value!!.removeAt(it)
+        }
+
         images.observe(this) {
             val imageBitmap: ArrayList<Bitmap?> = arrayListOf()
             for (image in it) {
@@ -183,10 +191,24 @@ class NoteDetails : AppCompatActivity() {
 
     }
 
+    private fun getImportant(radioGroup: RadioGroup): Int {
+        return when (radioGroup.checkedRadioButtonId) {
+            R.id.radio_2 -> {
+                2
+            }
+            R.id.radio_3 -> {
+                3
+            }
+            else -> {
+                1
+            }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && data != null) {
-            val mlist = images.value?: arrayListOf("")
+            val mlist = images.value ?: arrayListOf("")
             val list = arrayListOf<String>(data.data.toString())
             list.addAll(mlist)
             images.value = list

@@ -23,6 +23,8 @@ public class Note {
     public Integer month;
     @ColumnInfo(name = "day")
     public Integer day;
+    @ColumnInfo(name = "important")
+    public Integer important;
 
     public Note(String title, String detail) {
         image.add("");
@@ -30,8 +32,9 @@ public class Note {
         this.detail = detail;
     }
 
-    public Note(Integer id, String title, String detail, ArrayList<String> image, ArrayList<Integer> date) {
+    public Note(Integer id, String title, String detail, ArrayList<String> image, ArrayList<Integer> date, Integer important) {
         this.id = id;
+        this.important = important;
         this.title = title;
         this.detail = detail;
         this.image = image;
@@ -40,25 +43,28 @@ public class Note {
         day = date.get(2);
     }
 
-    public Note(Integer id, String title, String detail, ArrayList<String> image) {
+    public Note(Integer id, String title, String detail, ArrayList<String> image,Integer important) {
         this.image.add("");
         this.id = id;
+        this.important = important;
         this.title = title;
         this.detail = detail;
         this.image.addAll(image);
     }
 
-    public Note(String title, String detail, ArrayList<String> image, ArrayList<Integer> date) {
+    public Note(String title, String detail, ArrayList<String> image, ArrayList<Integer> date,Integer important) {
         this.image = image;
         this.title = title;
+        this.important = important;
         this.detail = detail;
         year = date.get(0);
         month = date.get(1);
         day = date.get(2);
     }
 
-    public Note(String title, String detail, ArrayList<String> image) {
+    public Note(String title, String detail, ArrayList<String> image,Integer important) {
         this.image.add("");
+        this.important = important;
         this.image.addAll(image);
         this.title = title;
         this.detail = detail;

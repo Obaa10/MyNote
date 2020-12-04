@@ -17,7 +17,7 @@
 
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="75dp"
+            android:layout_height="56dp"
             android:background="#D65932"
             app:layout_scrollFlags="scroll|enterAlways">
 

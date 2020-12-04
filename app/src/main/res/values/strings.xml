@@ -20,4 +20,7 @@
     <string name="no_note_image">no note image</string>
     <string name="delete_note">delete note</string>
     <string name="remove_image">remove image</string>
+    <string name="normal">normal</string>
+    <string name="important">important</string>
+    <string name="very_important">very important</string>
 </resources>
