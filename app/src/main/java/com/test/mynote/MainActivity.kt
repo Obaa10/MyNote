@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -16,6 +17,7 @@ import com.test.mynote.adapter.NoteListAdapter
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         val addButton: FloatingActionButton = findViewById(R.id.add_button)
         val noNoteToShowText: TextView = findViewById(R.id.no_note_text)
         val noNoteToShowImage: ImageView = findViewById(R.id.no_note_image)
+        val searchButton : ImageButton = findViewById(R.id.search)
 
         //Define the recyclerView and it's adapter
         val recyclerView: RecyclerView = findViewById(R.id.notes_list)
@@ -41,9 +44,11 @@ class MainActivity : AppCompatActivity() {
 
         //Set the visibility of "noNoteToShow" && Observe the movie list
         noteViewModel.allNote.observe(this) { notes ->
-            notes.let {
-                recyclerViewAdapter.submitList(it)
-                if (it?.size != 0) {
+            notes.let { list ->
+                noteViewModel.yearList.clear()
+                val mList = list?.sortedBy { Date(it.year,it.month,it.day)  }
+                recyclerViewAdapter.submitList(mList)
+                if (list?.size != 0) {
                     noNoteToShowText.visibility = View.INVISIBLE
                     noNoteToShowImage.visibility = View.INVISIBLE
                 } else {
@@ -57,6 +62,12 @@ class MainActivity : AppCompatActivity() {
         addButton.setOnClickListener {
             val intent = Intent(this, NoteDetails::class.java)
             startActivityForResult(intent, 1)
+        }
+
+        //Search note
+        searchButton.setOnClickListener {
+
+           // noteViewModel.getNoteByTitle()
         }
     }
 

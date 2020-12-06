@@ -23,7 +23,7 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val cardView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.note_card, parent, false) as CardView
+            .inflate(R.layout.note_card, parent, false)
         return ViewHolder(cardView)
     }
 
@@ -47,8 +47,12 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
             title.text = note.title
             detail.text = note.detail
             date.text = if (note.month > 0) {
-                note.year.toString() + "/" + note.month.toString() + "/" +
-                        note.day.toString()
+                if(!noteViewModel.yearList.contains(Date(note.year,note.month,note.day))){
+                    val date= Date(note.year,note.month,note.day)
+                    noteViewModel.yearList.add(date)
+                    "${note.year}/${note.month}/${note.day}"
+                }
+                else ""
             } else null
 
             //Set the corner's card color

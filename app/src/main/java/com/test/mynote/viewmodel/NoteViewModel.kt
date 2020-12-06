@@ -5,12 +5,16 @@ import androidx.lifecycle.*
 import com.test.mynote.database.Note
 import com.test.mynote.database.NoteRoomDatabase
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
 
 class NoteViewModel(application: Application) : ViewModel() {
 
     //get an instance of the RoomDatabase
     private val noteRoomDatabase = NoteRoomDatabase.getDatabase(application)
     private val dao = noteRoomDatabase.noteDao()
+
+    val yearList = arrayListOf<Date>()
 
     //List represent all the user's notes
     var allNote: LiveData<List<Note>?>
@@ -26,6 +30,8 @@ class NoteViewModel(application: Application) : ViewModel() {
             dao.insert(note)
         }
     }
+
+    fun getNoteByTitle(title : String) = dao.getNoteByTitle(title)
 
     fun getNote(noteId: Int) = dao.getNote(noteId).asLiveData()
 

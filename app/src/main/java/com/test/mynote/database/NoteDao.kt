@@ -30,4 +30,7 @@ interface NoteDao {
 
     @Query("Select * from note_table WHERE id = :key")
     fun getNote(key: Int): Flow<Note>
+
+    @Query("Select * from note_table WHERE title = :key")
+    fun getNoteByTitle(key: String): Note?
 }
