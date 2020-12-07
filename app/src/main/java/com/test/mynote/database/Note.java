@@ -7,8 +7,10 @@ import androidx.room.PrimaryKey;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import ir.mirrajabi.searchdialog.core.Searchable;
+
 @Entity(tableName = "note_table")
-public class Note {
+public class Note implements Searchable {
     @PrimaryKey(autoGenerate = true)
     public Integer id;
     @ColumnInfo(name = "title")
@@ -71,5 +73,10 @@ public class Note {
     }
 
     public Note() {
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
     }
 }

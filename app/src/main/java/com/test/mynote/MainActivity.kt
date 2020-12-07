@@ -19,6 +19,8 @@ import com.test.mynote.adapter.NoteListAdapter
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
+import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat
+import ir.mirrajabi.searchdialog.core.SearchResultListener
 import java.util.*
 
 
@@ -44,10 +46,14 @@ class MainActivity : AppCompatActivity() {
         val recyclerViewAdapter = NoteListAdapter(noteViewModel)
         recyclerView.adapter = recyclerViewAdapter
         val filter = MutableLiveData<Int>(0)
+        val mNotes = arrayListOf<Note>()
+
+
         //Set the visibility of "noNoteToShow" && Observe the movie list
         filter.observe(this) {
             noteViewModel.allNote.observe(this) { notes ->
                 notes.let { list ->
+                    mNotes.addAll(notes!!)
                     noteViewModel.yearList.clear()
                     var mList = list?.sortedBy { Date(it.year, it.month, it.day) }
                     val checkedId = arrayListOf<Int>(5, 5, 5)
@@ -73,12 +79,20 @@ class MainActivity : AppCompatActivity() {
 
         //Search note
         searchButton.setOnClickListener {
+            SimpleSearchDialogCompat<Note>(this, "Search by title",
+                "Enter the title", null, mNotes,
+                SearchResultListener<Note> { _, item, _ ->
+                    val intent = Intent(this, NoteDetails::class.java)
+                    intent.putExtra(NoteDetails.EXTRA_REPLY_ID, item.id)
+                    it.context.startActivity(intent)
+                }).show()
         }
 
         //Filter button
         filterButton.setOnClickListener {
             checkedItems = getImportant(checkedItems, filter)
         }
+
     }
 
 
