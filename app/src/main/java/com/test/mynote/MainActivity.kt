@@ -1,6 +1,7 @@
 package com.test.mynote
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -9,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +21,7 @@ import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
 import java.util.*
 
+
 class MainActivity : AppCompatActivity() {
 
     private val newNoteActivityRequestCode = 1
@@ -28,32 +31,37 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        var checkedItems = booleanArrayOf(true, true, true)
         noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
         val addButton: FloatingActionButton = findViewById(R.id.add_button)
         val noNoteToShowText: TextView = findViewById(R.id.no_note_text)
         val noNoteToShowImage: ImageView = findViewById(R.id.no_note_image)
-        val searchButton : ImageButton = findViewById(R.id.search)
-
+        val searchButton: ImageButton = findViewById(R.id.search)
+        val filterButton: ImageButton = findViewById(R.id.filter_button)
         //Define the recyclerView and it's adapter
         val recyclerView: RecyclerView = findViewById(R.id.notes_list)
         recyclerView.layoutManager = LinearLayoutManager(this)
         val recyclerViewAdapter = NoteListAdapter(noteViewModel)
         recyclerView.adapter = recyclerViewAdapter
-
+        val filter = MutableLiveData<Int>(0)
 
         //Set the visibility of "noNoteToShow" && Observe the movie list
-        noteViewModel.allNote.observe(this) { notes ->
-            notes.let { list ->
-                noteViewModel.yearList.clear()
-                val mList = list?.sortedBy { Date(it.year,it.month,it.day)  }
-                recyclerViewAdapter.submitList(mList)
-                if (list?.size != 0) {
-                    noNoteToShowText.visibility = View.INVISIBLE
-                    noNoteToShowImage.visibility = View.INVISIBLE
-                } else {
-                    noNoteToShowText.visibility = View.VISIBLE
-                    noNoteToShowImage.visibility = View.VISIBLE
+        filter.observe(this) {
+            noteViewModel.allNote.observe(this) { notes ->
+                notes.let { list ->
+                    noteViewModel.yearList.clear()
+                    var mList = list?.sortedBy { Date(it.year, it.month, it.day) }
+                    val checkedId = arrayListOf<Int>(5, 5, 5)
+                    checkedItems.forEachIndexed { index, b -> if (b) checkedId[index] = index + 1 }
+                    mList = mList?.filter { checkedId.contains(it.important) }
+                    recyclerViewAdapter.submitList(mList)
+                    if (mList?.size != 0) {
+                        noNoteToShowText.visibility = View.INVISIBLE
+                        noNoteToShowImage.visibility = View.INVISIBLE
+                    } else {
+                        noNoteToShowText.visibility = View.VISIBLE
+                        noNoteToShowImage.visibility = View.VISIBLE
+                    }
                 }
             }
         }
@@ -66,8 +74,11 @@ class MainActivity : AppCompatActivity() {
 
         //Search note
         searchButton.setOnClickListener {
+        }
 
-           // noteViewModel.getNoteByTitle()
+        //Filter button
+        filterButton.setOnClickListener {
+            checkedItems = getImportant(checkedItems, filter)
         }
     }
 
@@ -81,10 +92,10 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK && intentData != null) {
             intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
                 intentData.getIntegerArrayListExtra(NoteDetails.EXTRA_REPLY_DATE)?.let { date ->
-                    val image = intentData.getStringArrayListExtra("image")?: arrayListOf("")
+                    val image = intentData.getStringArrayListExtra("image") ?: arrayListOf("")
                     val important = date[3]
                     date.removeAt(3)
-                    val note = Note(reply[0], reply[1], image, date,important)
+                    val note = Note(reply[0], reply[1], image, date, important)
                     noteViewModel.insert(note)
                 }
             }
@@ -95,5 +106,25 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun getImportant(
+        booleanArray: BooleanArray,
+        mutableLiveData: MutableLiveData<Int>
+    ): BooleanArray {
+        val listItems = arrayOf("Normal", "Important", "Very Important")
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Choose Important")
+        builder.setMultiChoiceItems(listItems, booleanArray)
+        { dialog, which, isChecked ->
+            booleanArray[which] = isChecked
+        }
+
+        builder.setPositiveButton("Ok")
+        { dialog, which -> mutableLiveData.value = 1 }
+        builder.setNegativeButton("Cancel", null)
+        val dialog = builder.create()
+        dialog.show()
+        return booleanArray
     }
 }
