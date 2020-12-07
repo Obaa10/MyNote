@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         val recyclerViewAdapter = NoteListAdapter(noteViewModel)
         recyclerView.adapter = recyclerViewAdapter
         val filter = MutableLiveData<Int>(0)
-
         //Set the visibility of "noNoteToShow" && Observe the movie list
         filter.observe(this) {
             noteViewModel.allNote.observe(this) { notes ->

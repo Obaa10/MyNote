@@ -88,22 +88,11 @@ class NoteDetails : AppCompatActivity() {
                     if (it.image.size > 0) {
                         images.value = it.image
                     }
-                    when(it.important){
-                        1-> findViewById<RadioButton>(R.id.radio_1).isChecked=true
-                        2-> findViewById<RadioButton>(R.id.radio_2).isChecked=true
-                        3-> findViewById<RadioButton>(R.id.radio_3).isChecked=true
+                    when (it.important) {
+                        1 -> findViewById<RadioButton>(R.id.radio_1).isChecked = true
+                        2 -> findViewById<RadioButton>(R.id.radio_2).isChecked = true
+                        3 -> findViewById<RadioButton>(R.id.radio_3).isChecked = true
                     }
-                    /*for(image in it.image) {
-                        fullPhotoUri = image.toUri()
-                        val parcelFileDescriptor: ParcelFileDescriptor? =
-                            fullPhotoUri?.let { contentResolver.openFileDescriptor(it, "r") }
-                        parcelFileDescriptor?.let {
-                            val fileDescriptor: FileDescriptor = parcelFileDescriptor.fileDescriptor
-                            val original = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-                            noteImage.setImageBitmap(original)
-                        }
-                        removeButton.visibility=View.VISIBLE
-                    }*/
                 }
             }
         }
@@ -128,7 +117,16 @@ class NoteDetails : AppCompatActivity() {
                     val noteTitle = title.text.toString()
                     val noteDetails = detail.text.toString()
                     val imageUri: ArrayList<String> = images.value ?: arrayListOf("")
-                    noteViewModel.update(Note(noteId, noteTitle, noteDetails, imageUri, date, getImportant(radioGroup)))
+                    noteViewModel.update(
+                        Note(
+                            noteId,
+                            noteTitle,
+                            noteDetails,
+                            imageUri,
+                            date,
+                            getImportant(radioGroup)
+                        )
+                    )
                 }
             }
             finish()
