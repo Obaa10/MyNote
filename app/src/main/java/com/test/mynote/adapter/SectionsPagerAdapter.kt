@@ -3,7 +3,10 @@ package com.test.mynote.adapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import com.test.mynote.database.Note
+import com.test.mynote.ui.ArchivedFragment
 import com.test.mynote.ui.NotesFragment
+import com.test.mynote.ui.UpcomingAlarms
 
 
 class SectionsPagerAdapter(manager: FragmentManager) : FragmentPagerAdapter(
@@ -17,16 +20,20 @@ class SectionsPagerAdapter(manager: FragmentManager) : FragmentPagerAdapter(
 
     override fun getItem(position: Int): Fragment {
 //The fragment to be displayed on each page
-            return NotesFragment()
-            /* 1 -> return PizzaFragment()
-             2 -> return PastaFragment()
-             3 -> return StoresFragment()*/
+            return when(position) {
+                1 -> NotesFragment()
+                0 -> ArchivedFragment()
+                2 -> UpcomingAlarms()
+                else -> NotesFragment()
+            }
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
         return when(position){
-            0-> "Home screen "
-            else->null
+            1-> "My Notes"
+            0-> "Archived notes"
+            2-> "Upcoming alarms"
+            else -> null
         }
 
     }
