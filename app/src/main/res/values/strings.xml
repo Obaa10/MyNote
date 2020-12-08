@@ -28,4 +28,5 @@
     <string name="snack_bar_delete_text">Undo delete note</string>
     <string name="snack_bar_completed_text">Non completed</string>
     <string name="snack_bar_non">Non</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
