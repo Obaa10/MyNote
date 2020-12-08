@@ -27,6 +27,8 @@ public class Note implements Searchable {
     public Integer day;
     @ColumnInfo(name = "important")
     public Integer important;
+    @ColumnInfo(name = "completed")
+    public Boolean completed = false ;
 
     public Note(String title, String detail) {
         image.add("");

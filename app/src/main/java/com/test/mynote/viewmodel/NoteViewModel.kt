@@ -16,6 +16,8 @@ class NoteViewModel(application: Application) : ViewModel() {
 
     val yearList = arrayListOf<Date>()
 
+    var isCompleted = MutableLiveData<Boolean>(false)
+
     //List represent all the user's notes
     var allNote: LiveData<List<Note>?>
 

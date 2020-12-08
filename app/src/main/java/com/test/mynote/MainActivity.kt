@@ -5,17 +5,17 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.test.mynote.adapter.NoteListAdapter
+import com.test.mynote.adapter.SwipeToDeleteCallback
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
@@ -45,6 +45,15 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         val recyclerViewAdapter = NoteListAdapter(noteViewModel)
         recyclerView.adapter = recyclerViewAdapter
+        val swipeHandler = object : SwipeToDeleteCallback(this, noteViewModel,this) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                recyclerViewAdapter.completedNote(viewHolder.adapterPosition,findViewById(R.id.main))
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
+
         val filter = MutableLiveData<Int>(0)
         val mNotes = arrayListOf<Note>()
 
