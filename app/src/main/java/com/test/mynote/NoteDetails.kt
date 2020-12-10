@@ -1,10 +1,9 @@
 package com.test.mynote
 
 import android.Manifest
-import android.app.Activity
-import android.app.AlertDialog
-import android.app.DatePickerDialog
+import android.app.*
 import android.app.DatePickerDialog.OnDateSetListener
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -68,7 +67,7 @@ class NoteDetails : AppCompatActivity() {
         val intent = intent
         var isEmpty = true
         var noteId = 0
-        val date = arrayListOf(0, 0, 0,0,0,0,0,0)
+        val date = arrayListOf(0, 0, 0, 0, 0, 0, 0, 0)
         var noteLiveData: LiveData<Note>?
         var noteDate = Date()
 
@@ -87,7 +86,7 @@ class NoteDetails : AppCompatActivity() {
                     date[0] = it.year
                     date[1] = it.month
                     date[2] = it.day
-                    noteDate=Date(it.year,it.month,it.year)
+                    noteDate = Date(it.year, it.month, it.year)
                     if (it.image.size > 0) {
                         images.value = it.image
                     }
@@ -158,7 +157,7 @@ class NoteDetails : AppCompatActivity() {
                 }, year, month, day
             )
             datetime.show()
-            timeButton.visibility= View.VISIBLE
+            timeButton.visibility = View.VISIBLE
         }
 
         //Add alarm
@@ -168,6 +167,20 @@ class NoteDetails : AppCompatActivity() {
             date[5] = mDate[1]
             date[6] = mDate[2]
             date[7] = mDate[3]
+            val day = date[2]-date[4]
+            val month = date[1]-date[5]
+            val year = date[0]-date[6]
+            val alarmMgr =
+                getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent = Intent(this, NotifyByDate::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
+            val time = Calendar.getInstance()
+            time.timeInMillis = System.currentTimeMillis()
+            time.add(Calendar.SECOND, 10)
+//            time.add(Calendar.DAY_OF_MONTH, day)
+//            time.add(Calendar.MONTH, month)
+//            time.add(Calendar.YEAR, year)
+            alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
         }
 
         /* //Remove image
@@ -176,14 +189,16 @@ class NoteDetails : AppCompatActivity() {
              noteImage.setImageDrawable(null)
              removeButton.visibility = View.INVISIBLE
          }
- */
+    */
 
-        deleteImage.observe(this) {
+        deleteImage.observe(this)
+        {
             if (images.value != null && it != null)
                 images.value!!.removeAt(it)
         }
 
-        images.observe(this) {
+        images.observe(this)
+        {
             val imageBitmap: ArrayList<Bitmap?> = arrayListOf()
             for (image in it) {
                 if (image.isNotEmpty()) {
@@ -256,14 +271,14 @@ class NoteDetails : AppCompatActivity() {
         val listItems = arrayOf("Two days", "One day", "One hour", "Custom time")
         val mBuilder = AlertDialog.Builder(this)
         mBuilder.setTitle("Notify me..")
-        val mDate = arrayListOf<Int>(0,0,0,0)
-        mBuilder.setSingleChoiceItems(listItems,-1,
+        val mDate = arrayListOf<Int>(0, 0, 0, 0)
+        mBuilder.setSingleChoiceItems(listItems, -1,
             DialogInterface.OnClickListener { dialogInterface, i ->
-                when(i){
-                    1-> mDate[2]=2
-                    2-> mDate[2]=1
-                    3-> mDate[3]=1
-                    4->{
+                when (i) {
+                    1 -> mDate[2] = 2
+                    2 -> mDate[2] = 1
+                    3 -> mDate[3] = 1
+                    4 -> {
                         val myDate = getDate()
                         mDate[0] = myDate.year
                         mDate[1] = myDate.month
@@ -277,16 +292,16 @@ class NoteDetails : AppCompatActivity() {
         return mDate
     }
 
-    private fun getDate() : Date{
+    private fun getDate(): Date {
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
-        var date = Date(year,month,day)
+        var date = Date(year, month, day)
         val datetime = DatePickerDialog(
             this,
             OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
-                 date = Date(year,monthOfYear,dayOfMonth)
+                date = Date(year, monthOfYear, dayOfMonth)
             }, year, month, day
         )
         datetime.show()
