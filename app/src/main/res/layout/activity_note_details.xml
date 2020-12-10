@@ -33,7 +33,18 @@
                     android:src="@drawable/ic_baseline_calendar_today_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/time_button"
+                    android:layout_width="39dp"
+                    android:layout_height="30dp"
+                    android:background="#00FFFFFF"
+                    android:src="@drawable/ic_baseline_more_time_24"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/date_button"
+                    app:layout_constraintHorizontal_bias="0.97"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

@@ -33,4 +33,12 @@ interface NoteDao {
 
     @Query("Select * from note_table WHERE title = :key")
     fun getNoteByTitle(key: String): Note?
+
+    @Query("Select * from note_table WHERE archived = :key")
+    fun getAllArchivedNotes(key : Boolean = true) : Flow<List<Note>?>
+
+    @Query("Select * from note_table WHERE has_alarm = :key")
+    fun getAllAlarms(key : Boolean = true) : Flow<List<Note>?>
+
+
 }

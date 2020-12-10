@@ -2,8 +2,10 @@ package com.test.mynote
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -11,6 +13,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.text.TextUtils
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -48,11 +51,11 @@ class NoteDetails : AppCompatActivity() {
         setContentView(R.layout.activity_note_details)
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         images = MutableLiveData(arrayListOf(""))
         val dateButton: ImageButton = findViewById(R.id.date_button)
         val saveButton: FloatingActionButton = findViewById(R.id.save_button)
         val addImageButton: FloatingActionButton = findViewById(R.id.add_image_button)
+        val timeButton: ImageButton = findViewById(R.id.time_button)
         val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
         val imageList: RecyclerView = findViewById(R.id.image_list)
         imageList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -61,16 +64,15 @@ class NoteDetails : AppCompatActivity() {
         val title: EditText = findViewById(R.id.detail_title)
         val detail: EditText = findViewById(R.id.detail_description)
         val detailDate: TextView = findViewById(R.id.detail_date)
-
         val noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
         val intent = intent
         var isEmpty = true
         var noteId = 0
-        val date = arrayListOf(0, 0, 0)
+        val date = arrayListOf(0, 0, 0,0,0,0,0,0)
         var noteLiveData: LiveData<Note>?
+        var noteDate = Date()
 
-
-        //insert note
+        //Insert note
         intent?.let {
             noteId = intent.getIntExtra(EXTRA_REPLY_ID, 0)
             if (noteId > 0) {
@@ -85,6 +87,7 @@ class NoteDetails : AppCompatActivity() {
                     date[0] = it.year
                     date[1] = it.month
                     date[2] = it.day
+                    noteDate=Date(it.year,it.month,it.year)
                     if (it.image.size > 0) {
                         images.value = it.image
                     }
@@ -97,7 +100,7 @@ class NoteDetails : AppCompatActivity() {
             }
         }
 
-        //save or update the note
+        //Save or update the note
         saveButton.setOnClickListener {
             val replyIntent = Intent()
             if (TextUtils.isEmpty(title.text)) {
@@ -109,7 +112,7 @@ class NoteDetails : AppCompatActivity() {
                     val imageUri: ArrayList<String> = images.value ?: arrayListOf("")
                     val array: Array<String> = arrayOf(noteTitle, noteDetails)
                     replyIntent.putExtra(EXTRA_REPLY, array)
-                    date.add(getImportant(radioGroup))
+                    date[3] = getImportant(radioGroup)
                     replyIntent.putExtra(EXTRA_REPLY_DATE, date)
                     replyIntent.putExtra("image", imageUri)
                     setResult(Activity.RESULT_OK, replyIntent)
@@ -132,7 +135,7 @@ class NoteDetails : AppCompatActivity() {
             finish()
         }
 
-        //insert image
+        //Insert image
         addImageButton.setOnClickListener {
             requestRead()
         }
@@ -155,6 +158,16 @@ class NoteDetails : AppCompatActivity() {
                 }, year, month, day
             )
             datetime.show()
+            timeButton.visibility= View.VISIBLE
+        }
+
+        //Add alarm
+        timeButton.setOnClickListener {
+            val mDate = getTime()
+            date[4] = mDate[0]
+            date[5] = mDate[1]
+            date[6] = mDate[2]
+            date[7] = mDate[3]
         }
 
         /* //Remove image
@@ -237,6 +250,47 @@ class NoteDetails : AppCompatActivity() {
             type = "image/*"
         }
         startActivityForResult(intent1, 2)
+    }
+
+    private fun getTime(): ArrayList<Int> {
+        val listItems = arrayOf("Two days", "One day", "One hour", "Custom time")
+        val mBuilder = AlertDialog.Builder(this)
+        mBuilder.setTitle("Notify me..")
+        val mDate = arrayListOf<Int>(0,0,0,0)
+        mBuilder.setSingleChoiceItems(listItems,-1,
+            DialogInterface.OnClickListener { dialogInterface, i ->
+                when(i){
+                    1-> mDate[2]=2
+                    2-> mDate[2]=1
+                    3-> mDate[3]=1
+                    4->{
+                        val myDate = getDate()
+                        mDate[0] = myDate.year
+                        mDate[1] = myDate.month
+                        mDate[2] = myDate.day
+                    }
+                }
+                dialogInterface.dismiss()
+            })
+        val mDialog = mBuilder.create()
+        mDialog.show()
+        return mDate
+    }
+
+    private fun getDate() : Date{
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+        var date = Date(year,month,day)
+        val datetime = DatePickerDialog(
+            this,
+            OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
+                 date = Date(year,monthOfYear,dayOfMonth)
+            }, year, month, day
+        )
+        datetime.show()
+        return date
     }
 }
 

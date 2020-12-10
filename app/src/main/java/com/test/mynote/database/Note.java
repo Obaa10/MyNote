@@ -29,6 +29,18 @@ public class Note implements Searchable {
     public Integer important;
     @ColumnInfo(name = "completed")
     public Boolean completed = false ;
+    @ColumnInfo(name = "archived")
+    public Boolean archived = false;
+    @ColumnInfo(name = "n_year")
+    public Integer nYear=0;
+    @ColumnInfo(name = "n_month")
+    public Integer nMonth=0;
+    @ColumnInfo(name = "n_day")
+    public Integer nDay=0;
+    @ColumnInfo(name = "n_hours")
+    public Integer nHours=0;
+    @ColumnInfo(name = "has_alarm")
+    public Boolean hasAlarm = false ;
 
     public Note(String title, String detail) {
         image.add("");
@@ -56,8 +68,9 @@ public class Note implements Searchable {
         this.image.addAll(image);
     }
 
-    public Note(String title, String detail, ArrayList<String> image, ArrayList<Integer> date,Integer important) {
+    public Note(String title, String detail, ArrayList<String> image, ArrayList<Integer> date,Integer important,Boolean hasAlarm) {
         this.image = image;
+        this.hasAlarm=hasAlarm;
         this.title = title;
         this.important = important;
         this.detail = detail;

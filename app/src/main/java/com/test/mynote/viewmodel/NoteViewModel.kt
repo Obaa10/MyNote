@@ -39,6 +39,10 @@ class NoteViewModel(application: Application) : ViewModel() {
 
     fun getImage(noteId: Int) = dao.getImage(noteId).asLiveData()
 
+    fun getAllArchivedNotes() = dao.getAllArchivedNotes().asLiveData()
+
+    fun getAllAlarms() = dao.getAllAlarms().asLiveData()
+
     fun update(note: Note) {
         viewModelScope.launch {
             dao.updateNote(note)

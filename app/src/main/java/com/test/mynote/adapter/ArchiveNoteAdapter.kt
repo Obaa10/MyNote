@@ -11,28 +11,24 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.test.mynote.NoteDetails
 import com.test.mynote.R
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import java.util.*
 
-
-class NoteListAdapter(private val noteViewModel: NoteViewModel) :
+class ArchiveNoteAdapter (private val noteViewModel: NoteViewModel) :
     ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_COMPARATOR) {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteListAdapter.ViewHolder {
         val cardView = LayoutInflater.from(parent.context)
             .inflate(R.layout.note_card, parent, false)
-        return ViewHolder(cardView)
+        return NoteListAdapter.ViewHolder(cardView)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: NoteListAdapter.ViewHolder, position: Int) {
         val note = getItem(position)
-        holder.create(note, noteViewModel)
+        holder.create(note,noteViewModel)
     }
-
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val title: TextView = view.findViewById(R.id.note_title)
@@ -41,7 +37,6 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
         private val deleteButton: ImageButton = view.findViewById(R.id.button)
         private val cardColor: TextView = view.findViewById(R.id.color)
         private val cardView : CardView = view.findViewById(R.id.note_card)
-
         fun create(note: Note, noteViewModel: NoteViewModel) {
             title.text = note.title
             detail.text = note.detail
@@ -92,8 +87,7 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
             }
         }
     }
-
-    companion object {
+        companion object {
         private val NOTES_COMPARATOR = object : DiffUtil.ItemCallback<Note>() {
             override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
                 return oldItem.title == newItem.title
@@ -104,31 +98,4 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
             }
         }
     }
-
-    fun completedNote(id: Int, view: View) {
-        val note = getItem(id)
-        if (note.completed) {
-            note.archived=true
-            noteViewModel.update(note)
-            notifyItemChanged(id)
-            val snackbar: Snackbar = Snackbar.make(
-                view, R.string.snack_bar_delete_text,
-                Snackbar.LENGTH_LONG
-            )
-            snackbar.setAction(R.string.snack_bar_undo) { v -> noteViewModel.insert(note) }
-            snackbar.show()
-        } else {
-            note.completed=true
-            noteViewModel.update(note)
-            noteViewModel.isCompleted.value=true
-            notifyItemChanged(id)
-            val snackbar: Snackbar = Snackbar.make(
-                view, R.string.snack_bar_completed_text,
-                Snackbar.LENGTH_LONG
-            )
-            snackbar.setAction(R.string.snack_bar_non) { v -> note.completed=false }
-            snackbar.show()
-        }
-    }
 }
-

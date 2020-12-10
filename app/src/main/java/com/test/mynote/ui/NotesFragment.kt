@@ -34,10 +34,6 @@ class NotesFragment : Fragment() {
     private val newNoteActivityRequestCode = 1
     private lateinit var noteViewModel: NoteViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -68,10 +64,8 @@ class NotesFragment : Fragment() {
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
-
         val filter = MutableLiveData<Int>(0)
         val mNotes = arrayListOf<Note>()
-
 
         //Set the visibility of "noNoteToShow" && Observe the movie list
         filter.observe(this) {
@@ -83,6 +77,7 @@ class NotesFragment : Fragment() {
                     val checkedId = arrayListOf<Int>(5, 5, 5)
                     checkedItems.forEachIndexed { index, b -> if (b) checkedId[index] = index + 1 }
                     mList = mList?.filter { checkedId.contains(it.important) }
+                    mList = mList?.filter { it.archived==false }
                     recyclerViewAdapter.submitList(mList)
                     if (mList?.size != 0) {
                         noNoteToShowText.visibility = View.INVISIBLE
@@ -151,8 +146,9 @@ class NotesFragment : Fragment() {
                 intentData.getIntegerArrayListExtra(NoteDetails.EXTRA_REPLY_DATE)?.let { date ->
                     val image = intentData.getStringArrayListExtra("image") ?: arrayListOf("")
                     val important = date[3]
+                    val hasAlarms = date[4]>0||date[5]>0||date[6]>0||date[7]>0
                     date.removeAt(3)
-                    val note = Note(reply[0], reply[1], image, date, important)
+                    val note = Note(reply[0], reply[1], image, date, important,true)
                     noteViewModel.insert(note)
                 }
             }
