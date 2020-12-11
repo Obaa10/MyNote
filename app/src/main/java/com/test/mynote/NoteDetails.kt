@@ -80,9 +80,11 @@ class NoteDetails : AppCompatActivity() {
                     isEmpty = false
                     title.setText(it.title)
                     detail.setText(it.detail)
-                    if (it.year != 0)
+                    if (it.year != 0){
                         detailDate.text = it.year.toString() + "/" + it.month.toString() + "/" +
                                 it.day.toString()
+                        timeButton.visibility = View.VISIBLE
+                    }
                     date[0] = it.year
                     date[1] = it.month
                     date[2] = it.day
@@ -173,23 +175,16 @@ class NoteDetails : AppCompatActivity() {
             val alarmMgr =
                 getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(this, NotifyByDate::class.java)
+            intent.putExtra("date",date)
+            intent.putExtra("name",title.text.toString())
             val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
             val time = Calendar.getInstance()
             time.timeInMillis = System.currentTimeMillis()
-            time.add(Calendar.SECOND, 10)
-//            time.add(Calendar.DAY_OF_MONTH, day)
-//            time.add(Calendar.MONTH, month)
-//            time.add(Calendar.YEAR, year)
+            time.add(Calendar.DAY_OF_MONTH, day)
+            time.add(Calendar.MONTH, month)
+            time.add(Calendar.YEAR, year)
             alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
         }
-
-        /* //Remove image
-         removeButton.setOnClickListener {
-             fullPhotoUri = null
-             noteImage.setImageDrawable(null)
-             removeButton.visibility = View.INVISIBLE
-         }
-    */
 
         deleteImage.observe(this)
         {
@@ -275,10 +270,10 @@ class NoteDetails : AppCompatActivity() {
         mBuilder.setSingleChoiceItems(listItems, -1,
             DialogInterface.OnClickListener { dialogInterface, i ->
                 when (i) {
-                    1 -> mDate[2] = 2
-                    2 -> mDate[2] = 1
-                    3 -> mDate[3] = 1
-                    4 -> {
+                    0 -> mDate[2] = 2
+                    1 -> mDate[2] = 1
+                    2 -> mDate[3] = 1
+                    3 -> {
                         val myDate = getDate()
                         mDate[0] = myDate.year
                         mDate[1] = myDate.month

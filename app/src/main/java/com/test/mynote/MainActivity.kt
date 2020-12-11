@@ -11,86 +11,13 @@ import com.test.mynote.viewmodel.NoteViewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val newNoteActivityRequestCode = 1
-    private lateinit var noteViewModel: NoteViewModel
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-/*
-        var checkedItems = booleanArrayOf(true, true, true)
-        noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
-        val addButton: FloatingActionButton = findViewById(R.id.add_button)
-        val noNoteToShowText: TextView = findViewById(R.id.no_note_text)
-        val noNoteToShowImage: ImageView = findViewById(R.id.no_note_image)
-        val searchButton: ImageButton = findViewById(R.id.search)
-        val filterButton: ImageButton = findViewById(R.id.filter_button)
-        //Define the recyclerView and it's adapter
-        val recyclerView: RecyclerView = findViewById(R.id.notes_list)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        val recyclerViewAdapter = NoteListAdapter(noteViewModel)
-        recyclerView.adapter = recyclerViewAdapter
-        val swipeHandler = object : SwipeToDeleteCallback(this, noteViewModel,this) {
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                recyclerViewAdapter.completedNote(viewHolder.adapterPosition,findViewById(R.id.main))
-            }
-        }
-        val itemTouchHelper = ItemTouchHelper(swipeHandler)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
-
-
-        val filter = MutableLiveData<Int>(0)
-        val mNotes = arrayListOf<Note>()
-
-
-        //Set the visibility of "noNoteToShow" && Observe the movie list
-        filter.observe(this) {
-            noteViewModel.allNote.observe(this) { notes ->
-                notes.let { list ->
-                    mNotes.addAll(notes!!)
-                    noteViewModel.yearList.clear()
-                    var mList = list?.sortedBy { Date(it.year, it.month, it.day) }
-                    val checkedId = arrayListOf<Int>(5, 5, 5)
-                    checkedItems.forEachIndexed { index, b -> if (b) checkedId[index] = index + 1 }
-                    mList = mList?.filter { checkedId.contains(it.important) }
-                    recyclerViewAdapter.submitList(mList)
-                    if (mList?.size != 0) {
-                        noNoteToShowText.visibility = View.INVISIBLE
-                        noNoteToShowImage.visibility = View.INVISIBLE
-                    } else {
-                        noNoteToShowText.visibility = View.VISIBLE
-                        noNoteToShowImage.visibility = View.VISIBLE
-                    }
-                }
-            }
-        }
-
-        //Add new note
-        addButton.setOnClickListener {
-            val intent = Intent(this, NoteDetails::class.java)
-            startActivityForResult(intent, 1)
-        }
-
-        //Search note
-        searchButton.setOnClickListener {
-            SimpleSearchDialogCompat<Note>(this, "Search by title",
-                "Enter the title", null, mNotes,
-                SearchResultListener<Note> { _, item, _ ->
-                    val intent = Intent(this, NoteDetails::class.java)
-                    intent.putExtra(NoteDetails.EXTRA_REPLY_ID, item.id)
-                    it.context.startActivity(intent)
-                }).show()
-        }
-
-        //Filter button
-        filterButton.setOnClickListener {
-            checkedItems = getImportant(checkedItems, filter)
-        }
-*/
         //Attach the SectionsPagerAdapter to the ViewPager
         val pagerAdapter = SectionsPagerAdapter(supportFragmentManager)
         val pager = findViewById<View>(R.id.pager) as ViewPager
+        pager.setCurrentItem(1)
         pager.adapter = pagerAdapter
         //Attach the ViewPager to the TabLayout
 
@@ -99,49 +26,5 @@ class MainActivity : AppCompatActivity() {
         tabLayout.setupWithViewPager(pager)
     }
 
-/*
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        intentData: Intent?
-    ) {
-        super.onActivityResult(requestCode, resultCode, intentData)
-        if (requestCode == newNoteActivityRequestCode && resultCode == Activity.RESULT_OK && intentData != null) {
-            intentData.getStringArrayExtra(NoteDetails.EXTRA_REPLY)?.let { reply ->
-                intentData.getIntegerArrayListExtra(NoteDetails.EXTRA_REPLY_DATE)?.let { date ->
-                    val image = intentData.getStringArrayListExtra("image") ?: arrayListOf("")
-                    val important = date[3]
-                    date.removeAt(3)
-                    val note = Note(reply[0], reply[1], image, date, important)
-                    noteViewModel.insert(note)
-                }
-            }
-        } else {
-            Toast.makeText(
-                applicationContext,
-                R.string.empty_not_saved,
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
 
-    private fun getImportant(
-        booleanArray: BooleanArray,
-        mutableLiveData: MutableLiveData<Int>
-    ): BooleanArray {
-        val listItems = arrayOf("Normal", "Important", "Very Important")
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Choose Important")
-        builder.setMultiChoiceItems(listItems, booleanArray)
-        { dialog, which, isChecked ->
-            booleanArray[which] = isChecked
-        }
-
-        builder.setPositiveButton("Ok")
-        { dialog, which -> mutableLiveData.value = 1 }
-        builder.setNegativeButton("Cancel", null)
-        val dialog = builder.create()
-        dialog.show()
-        return booleanArray
-    }*/
 }
