@@ -321,29 +321,13 @@ class NoteDetails : AppCompatActivity() {
                             }, year, month, day
                         )
                         datetime.show()
-                        dialogInterface.dismiss()
                     }
                 }
                 mDate.value = mDates
+                dialogInterface.dismiss()
             })
         val mDialog = mBuilder.create()
         mDialog.show()
-    }
-
-    private fun getDate(): Date {
-        val c = Calendar.getInstance()
-        val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
-        val day = c.get(Calendar.DAY_OF_MONTH)
-        var date = Date(year, month, day)
-        val datetime = DatePickerDialog(
-            this,
-            OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
-                date = Date(year, monthOfYear, dayOfMonth)
-            }, year, month, day
-        )
-        datetime.show()
-        return date
     }
 }
 
