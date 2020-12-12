@@ -146,9 +146,9 @@ class NotesFragment : Fragment() {
                 intentData.getIntegerArrayListExtra(NoteDetails.EXTRA_REPLY_DATE)?.let { date ->
                     val image = intentData.getStringArrayListExtra("image") ?: arrayListOf("")
                     val important = date[3]
-                    val hasAlarms = date[4]>0||date[5]>0||date[6]>0||date[7]>0
+                    val hasAlarms = (date[4]>0||date[5]>0||date[6]>0||date[7]>0)
                     date.removeAt(3)
-                    val note = Note(reply[0], reply[1], image, date, important,true)
+                    val note = Note(reply[0], reply[1], image, date, important,hasAlarms)
                     noteViewModel.insert(note)
                 }
             }

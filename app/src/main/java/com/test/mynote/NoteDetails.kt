@@ -30,6 +30,7 @@ import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
 import java.io.FileDescriptor
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class NoteDetails : AppCompatActivity() {
@@ -44,6 +45,7 @@ class NoteDetails : AppCompatActivity() {
         var deleteImage: MutableLiveData<Int?> = MutableLiveData(null)
     }
 
+    var mDate = MutableLiveData<ArrayList<Int>>(arrayListOf(0, 0, 0, 0))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +72,7 @@ class NoteDetails : AppCompatActivity() {
         val date = arrayListOf(0, 0, 0, 0, 0, 0, 0, 0)
         var noteLiveData: LiveData<Note>?
         var noteDate = Date()
+        var hasAlarm = false
 
         //Insert note
         intent?.let {
@@ -78,9 +81,10 @@ class NoteDetails : AppCompatActivity() {
                 noteLiveData = noteViewModel.getNote(noteId)
                 noteLiveData!!.observe(this) {
                     isEmpty = false
+                    hasAlarm = it.hasAlarm
                     title.setText(it.title)
                     detail.setText(it.detail)
-                    if (it.year != 0){
+                    if (it.year != 0) {
                         detailDate.text = it.year.toString() + "/" + it.month.toString() + "/" +
                                 it.day.toString()
                         timeButton.visibility = View.VISIBLE
@@ -88,6 +92,10 @@ class NoteDetails : AppCompatActivity() {
                     date[0] = it.year
                     date[1] = it.month
                     date[2] = it.day
+                    date[4] = it.nYear
+                    date[5] = it.nMonth
+                    date[6] = it.nDay
+                    date[7] = it.nHours
                     noteDate = Date(it.year, it.month, it.year)
                     if (it.image.size > 0) {
                         images.value = it.image
@@ -128,10 +136,25 @@ class NoteDetails : AppCompatActivity() {
                             noteDetails,
                             imageUri,
                             date,
-                            getImportant(radioGroup)
+                            getImportant(radioGroup),
+                            hasAlarm
                         )
                     )
                 }
+            }
+            if(hasAlarm) {
+                val alarmMgr =
+                    getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                val intent = Intent(this, NotifyByDate::class.java)
+                intent.putExtra("date", date)
+                intent.putExtra("name", title.text.toString())
+                val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
+                val time = Calendar.getInstance()
+                val day = if(date[0]<date[4]) 0 else (date[0]-date[4])*(date[1]*30+date[3])-(date[5]*30+date[6])
+                println("*****************" + day)
+                time.timeInMillis = System.currentTimeMillis()
+                time.add(Calendar.SECOND, (day*24*60*60))
+                alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
             }
             finish()
         }
@@ -151,7 +174,7 @@ class NoteDetails : AppCompatActivity() {
                 this,
                 OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
                     date[0] = years
-                    date[1] = monthOfYear
+                    date[1] = monthOfYear+1
                     date[2] = dayOfMonth
                     detailDate.text = years.toString() + "/" +
                             monthOfYear.toString() + "/" +
@@ -164,26 +187,23 @@ class NoteDetails : AppCompatActivity() {
 
         //Add alarm
         timeButton.setOnClickListener {
-            val mDate = getTime()
-            date[4] = mDate[0]
-            date[5] = mDate[1]
-            date[6] = mDate[2]
-            date[7] = mDate[3]
-            val day = date[2]-date[4]
-            val month = date[1]-date[5]
-            val year = date[0]-date[6]
-            val alarmMgr =
-                getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val intent = Intent(this, NotifyByDate::class.java)
-            intent.putExtra("date",date)
-            intent.putExtra("name",title.text.toString())
-            val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
-            val time = Calendar.getInstance()
-            time.timeInMillis = System.currentTimeMillis()
-            time.add(Calendar.DAY_OF_MONTH, day)
-            time.add(Calendar.MONTH, month)
-            time.add(Calendar.YEAR, year)
-            alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
+            getTime(date)
+            var day = 0
+            var month = 0
+            var year = 0
+            mDate.observe(this) { mDate ->
+                hasAlarm = (mDate[0] > 0 || mDate[1] > 0 || mDate[2] > 0 || date[7] > 0)
+                day = mDate[2]
+                month = mDate[1]
+                year = mDate[0]
+                date[4] = year
+                date[5] = month
+                date[6] = day
+                date[7] = mDate[3]
+            }
+
+
+
         }
 
         deleteImage.observe(this)
@@ -262,29 +282,52 @@ class NoteDetails : AppCompatActivity() {
         startActivityForResult(intent1, 2)
     }
 
-    private fun getTime(): ArrayList<Int> {
+    private fun getTime(date: ArrayList<Int>) {
         val listItems = arrayOf("Two days", "One day", "One hour", "Custom time")
         val mBuilder = AlertDialog.Builder(this)
         mBuilder.setTitle("Notify me..")
-        val mDate = arrayListOf<Int>(0, 0, 0, 0)
+        val mDates = arrayListOf<Int>(0, 0, 0, 0)
         mBuilder.setSingleChoiceItems(listItems, -1,
             DialogInterface.OnClickListener { dialogInterface, i ->
                 when (i) {
-                    0 -> mDate[2] = 2
-                    1 -> mDate[2] = 1
-                    2 -> mDate[3] = 1
+                    0 -> {
+                        mDates[2] = date[2] - 2
+                        mDates[0] = date[0]
+                        mDates[1] = date[1]
+                    }
+                    1 -> {
+                        mDates[2] = date[2] - 1
+                        mDates[0] = date[0]
+                        mDates[1] = date[1]
+                    }
+                    2 -> {
+                        mDates[3] = 1
+                        mDates[2] = date[2]
+                        mDates[0] = date[0]
+                        mDates[1] = date[1]
+                    }
                     3 -> {
-                        val myDate = getDate()
-                        mDate[0] = myDate.year
-                        mDate[1] = myDate.month
-                        mDate[2] = myDate.day
+                        val c = Calendar.getInstance()
+                        val year = c.get(Calendar.YEAR)
+                        val month = c.get(Calendar.MONTH)
+                        val day = c.get(Calendar.DAY_OF_MONTH)
+                        val datetime = DatePickerDialog(
+                            this,
+                            OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
+                                mDates[0] = years
+                                mDates[1] = monthOfYear
+                                mDates[2] = dayOfMonth
+                                mDate.value=mDates
+                            }, year, month, day
+                        )
+                        datetime.show()
+                        dialogInterface.dismiss()
                     }
                 }
-                dialogInterface.dismiss()
+                mDate.value = mDates
             })
         val mDialog = mBuilder.create()
         mDialog.show()
-        return mDate
     }
 
     private fun getDate(): Date {

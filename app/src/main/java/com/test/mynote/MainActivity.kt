@@ -17,11 +17,10 @@ class MainActivity : AppCompatActivity() {
         //Attach the SectionsPagerAdapter to the ViewPager
         val pagerAdapter = SectionsPagerAdapter(supportFragmentManager)
         val pager = findViewById<View>(R.id.pager) as ViewPager
-        pager.setCurrentItem(1)
+        val id = 1
         pager.adapter = pagerAdapter
-        //Attach the ViewPager to the TabLayout
-
-        //Attach the ViewPager to the TabLayout
+        pager.currentItem= id
+        println("********************************"+pager.currentItem)
         val tabLayout = findViewById<View>(R.id.tabs) as TabLayout
         tabLayout.setupWithViewPager(pager)
     }

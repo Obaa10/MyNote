@@ -48,15 +48,20 @@ public class Note implements Searchable {
         this.detail = detail;
     }
 
-    public Note(Integer id, String title, String detail, ArrayList<String> image, ArrayList<Integer> date, Integer important) {
+    public Note(Integer id, String title, String detail, ArrayList<String> image, ArrayList<Integer> date, Integer important,Boolean hasAlarm) {
         this.id = id;
         this.important = important;
         this.title = title;
+        this.hasAlarm=hasAlarm;
         this.detail = detail;
         this.image = image;
         year = date.get(0);
         month = date.get(1);
         day = date.get(2);
+        nYear = date.get(4);
+        nMonth = date.get(5);
+        nDay= date.get(6);
+        nHours = date.get(7);
     }
 
     public Note(Integer id, String title, String detail, ArrayList<String> image,Integer important) {
@@ -77,6 +82,10 @@ public class Note implements Searchable {
         year = date.get(0);
         month = date.get(1);
         day = date.get(2);
+        nYear = date.get(3);
+        nMonth = date.get(4);
+        nDay= date.get(5);
+        nHours = date.get(6);
     }
 
     public Note(String title, String detail, ArrayList<String> image,Integer important) {

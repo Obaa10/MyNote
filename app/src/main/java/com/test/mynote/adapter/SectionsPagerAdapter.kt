@@ -14,7 +14,6 @@ class SectionsPagerAdapter(manager: FragmentManager) : FragmentPagerAdapter(
     FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
 ) {
     override fun getCount(): Int {
-//The number of pages in the ViewPager
         return 3
     }
 
