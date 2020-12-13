@@ -44,7 +44,7 @@ abstract class SwipeToDeleteCallback(val context: Context,val noteViewModel: Not
     ) {
         noteViewModel.isCompleted.observe(activity){
             if (it)
-            deleteIcon = ContextCompat.getDrawable(context,R.drawable.ic_baseline_delete_24)!!
+            deleteIcon = ContextCompat.getDrawable(context,R.drawable.ic_baseline_filter_alt_24)!!
         }
         val itemView = viewHolder.itemView
         val itemHeight = itemView.bottom - itemView.top-40

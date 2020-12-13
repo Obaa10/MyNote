@@ -38,7 +38,7 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
         private val detail: TextView = view.findViewById(R.id.card_detail)
         private val deleteButton: ImageButton = view.findViewById(R.id.button)
         private val cardColor: TextView = view.findViewById(R.id.color)
-        private val cardView : CardView = view.findViewById(R.id.note_card)
+        private val cardView: CardView = view.findViewById(R.id.note_card)
 
         fun create(note: Note, noteViewModel: NoteViewModel) {
             title.text = note.title
@@ -106,25 +106,31 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
     fun completedNote(id: Int, view: View) {
         val note = getItem(id)
         if (note.completed) {
-            note.archived=true
+            note.archived = true
             noteViewModel.update(note)
             notifyItemChanged(id)
             val snackbar: Snackbar = Snackbar.make(
                 view, R.string.snack_bar_delete_text,
                 Snackbar.LENGTH_LONG
             )
-            snackbar.setAction(R.string.snack_bar_undo) { v -> noteViewModel.insert(note) }
+            snackbar.setAction(R.string.snack_bar_undo) { v ->
+                note.archived = false
+                noteViewModel.update(note)
+            }
             snackbar.show()
         } else {
-            note.completed=true
-            noteViewModel.isCompleted.value=true
+            note.completed = true
+            noteViewModel.isCompleted.value = true
             noteViewModel.update(note)
             notifyItemChanged(id)
             val snackbar: Snackbar = Snackbar.make(
                 view, R.string.snack_bar_completed_text,
                 Snackbar.LENGTH_LONG
             )
-            snackbar.setAction(R.string.snack_bar_non) { v -> note.completed=false }
+            snackbar.setAction(R.string.snack_bar_non) { v ->
+                note.completed = false
+                noteViewModel.update(note)
+            }
             snackbar.show()
         }
     }

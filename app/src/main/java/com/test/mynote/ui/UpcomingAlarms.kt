@@ -20,12 +20,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.test.mynote.NotifyByDate
 import com.test.mynote.R
 import com.test.mynote.adapter.UpcomingAlarmsAdapter
+import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.absoluteValue
 
 class UpcomingAlarms : Fragment() {
     var mDate = MutableLiveData<ArrayList<Int>>(arrayListOf(0, 0, 0, 0))
+    var list = arrayListOf<Note>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +47,7 @@ class UpcomingAlarms : Fragment() {
         recyclerView.adapter = archiveNoteAdapter
         noteViewModel.getAllAlarms().observe(this) {
             archiveNoteAdapter.submitList(it)
+            list= it as ArrayList<Note>
         }
 
 
@@ -69,7 +74,7 @@ class UpcomingAlarms : Fragment() {
         return view
     }
 
-    private fun getTime(date: ArrayList<Int>) {
+  /*  private fun getTime(date: ArrayList<Int>) {
         val listItems = arrayOf("Two days", "One day", "One hour", "Custom time")
         val mBuilder = AlertDialog.Builder(activity)
         mBuilder.setTitle("Notify me..")
@@ -102,7 +107,7 @@ class UpcomingAlarms : Fragment() {
                             activity!!,
                             DatePickerDialog.OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
                                 mDates[0] = years
-                                mDates[1] = monthOfYear
+                                mDates[1] = monthOfYear+1
                                 mDates[2] = dayOfMonth
                                 mDate.value = mDates
                             }, year, month, day
@@ -110,21 +115,13 @@ class UpcomingAlarms : Fragment() {
                         datetime.show()
                     }
                 }
-                if (Date(mDates[0], mDates[1], mDates[2]) < Date(date[0], date[1], date[2])) {
-                    mDate.value = mDates
-                } else
-                    Toast.makeText(
-                        activity!!.applicationContext,
-                        "uncorect date",
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
+                mDate.value = mDates
                 dialogInterface.dismiss()
             })
         val mDialog = mBuilder.create()
         mDialog.show()
     }
-
+*/
 
     private fun addAlarm(year: Int, nYear: Int, month: Int, nMonth: Int, day: Int, nDay: Int
                          , noteViewModel:NoteViewModel, id:Int) {
@@ -132,18 +129,21 @@ class UpcomingAlarms : Fragment() {
             activity!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(activity, NotifyByDate::class.java)
         intent.putExtra("date", arrayListOf(year,month,day))
-        intent.putExtra("name", "title.text.toString()")
+        intent.putExtra("name", list.find { note -> note.id==id }?.title)
         val pendingIntent = PendingIntent.getBroadcast(activity, 0, intent, 0)
         val time = Calendar.getInstance()
-            if (year < nYear) Toast.makeText(activity,
-            "Uncorrected Date",Toast.LENGTH_LONG).show()
-            else {
-                noteViewModel.updateAlarm(id, nYear, nMonth, nDay)
-                val aDay = (year - nYear) * (month * 30 + day) - (nMonth * 30 + nDay)
-                println("*****************" + aDay)
-                time.timeInMillis = System.currentTimeMillis()
-                time.add(Calendar.SECOND, (aDay * 24 * 60 * 60))
-                alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
-            }
+        if(Date(year,month,day) < (Date(nYear,nMonth,nDay))){
+            Toast.makeText(activity,"Error",Toast.LENGTH_LONG).show()
+        }
+        else {
+            noteViewModel.updateAlarm(id,nYear,nMonth,nDay)
+            val alramsDay =
+                (year-nYear)*360+((month-nMonth)*30).absoluteValue + day - nDay
+            println("*****************" + alramsDay)
+            println("*****************" +"$year $month $day $nYear $nMonth $nDay")
+            time.timeInMillis = System.currentTimeMillis()
+            time.add(Calendar.SECOND, (alramsDay * 24 * 60 * 60))
+            alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
+        }
         }
 }

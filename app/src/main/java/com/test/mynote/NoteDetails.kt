@@ -31,6 +31,7 @@ import com.test.mynote.viewmodel.NoteViewModelFactory
 import java.io.FileDescriptor
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.absoluteValue
 
 
 class NoteDetails : AppCompatActivity() {
@@ -150,11 +151,17 @@ class NoteDetails : AppCompatActivity() {
                 intent.putExtra("name", title.text.toString())
                 val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
                 val time = Calendar.getInstance()
-                val day = if(date[0]<date[4]) 0 else (date[0]-date[4])*(date[1]*30+date[3])-(date[5]*30+date[6])
-                println("*****************" + day)
-                time.timeInMillis = System.currentTimeMillis()
-                time.add(Calendar.SECOND, (day*24*60*60))
-                alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
+                if(Date(date[0],date[1],date[2]) < (Date(date[4],date[5],date[6]))){
+                    Toast.makeText(this,"Error",Toast.LENGTH_LONG).show()
+                }
+                else {
+                    val day =
+                        (date[0]-date[4])*360+(date[1]-date[5]*30).absoluteValue + date[3] +date[6]
+                    println("*****************" + day)
+                    time.timeInMillis = System.currentTimeMillis()
+                    time.add(Calendar.SECOND, (day * 24 * 60 * 60))
+                    alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
+                }
                 noteViewModel.removeAlarm.observe(this){
                     if(it) {
                         alarmMgr.cancel(pendingIntent)
@@ -200,7 +207,7 @@ class NoteDetails : AppCompatActivity() {
                 this,
                 OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
                     date[4] = years
-                    date[5] = monthOfYear
+                    date[5] = monthOfYear+1
                     date[6] = dayOfMonth
                     hasAlarm=true
                 }, year, month, day

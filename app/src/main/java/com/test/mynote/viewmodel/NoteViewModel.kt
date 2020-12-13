@@ -26,7 +26,6 @@ class NoteViewModel(application: Application) : ViewModel() {
     init {
         allNote = dao.getAllNote().asLiveData()
     }
-
     fun insert(note: Note) {
         viewModelScope.launch {
             dao.insert(note)
