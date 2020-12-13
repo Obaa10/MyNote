@@ -18,7 +18,6 @@ import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import java.util.*
 
-
 class NoteListAdapter(private val noteViewModel: NoteViewModel) :
     ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_COMPARATOR) {
 
@@ -32,7 +31,6 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
         val note = getItem(position)
         holder.create(note, noteViewModel)
     }
-
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val title: TextView = view.findViewById(R.id.note_title)
@@ -119,8 +117,8 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
             snackbar.show()
         } else {
             note.completed=true
-            noteViewModel.update(note)
             noteViewModel.isCompleted.value=true
+            noteViewModel.update(note)
             notifyItemChanged(id)
             val snackbar: Snackbar = Snackbar.make(
                 view, R.string.snack_bar_completed_text,
@@ -131,4 +129,3 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
         }
     }
 }
-

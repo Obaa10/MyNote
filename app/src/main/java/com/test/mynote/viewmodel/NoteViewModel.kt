@@ -5,6 +5,8 @@ import androidx.lifecycle.*
 import com.test.mynote.database.Note
 import com.test.mynote.database.NoteRoomDatabase
 import kotlinx.coroutines.launch
+import java.time.Month
+import java.time.Year
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -13,14 +15,12 @@ class NoteViewModel(application: Application) : ViewModel() {
     //get an instance of the RoomDatabase
     private val noteRoomDatabase = NoteRoomDatabase.getDatabase(application)
     private val dao = noteRoomDatabase.noteDao()
-
+    val removeAlarm = MutableLiveData<Boolean>(false)
+    val editAlarm = MutableLiveData<ArrayList<Int>>(arrayListOf(-1,0,0,0,0,0,0))
     val yearList = arrayListOf<Date>()
-
     var isCompleted = MutableLiveData<Boolean>(false)
-
     //List represent all the user's notes
     var allNote: LiveData<List<Note>?>
-
     lateinit var images : MutableLiveData<ArrayList<String>>
     //Initialize the (allNote) List
     init {
@@ -30,6 +30,12 @@ class NoteViewModel(application: Application) : ViewModel() {
     fun insert(note: Note) {
         viewModelScope.launch {
             dao.insert(note)
+        }
+    }
+
+    fun updateAlarm(id: Int,year: Int,month: Int,day :Int){
+        viewModelScope.launch {
+            dao.updateAlarm(id, year, month, day)
         }
     }
 

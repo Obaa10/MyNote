@@ -155,6 +155,12 @@ class NoteDetails : AppCompatActivity() {
                 time.timeInMillis = System.currentTimeMillis()
                 time.add(Calendar.SECOND, (day*24*60*60))
                 alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
+                noteViewModel.removeAlarm.observe(this){
+                    if(it) {
+                        alarmMgr.cancel(pendingIntent)
+                    }
+                }
+                noteViewModel.removeAlarm.value=false
             }
             finish()
         }
@@ -187,23 +193,19 @@ class NoteDetails : AppCompatActivity() {
 
         //Add alarm
         timeButton.setOnClickListener {
-            getTime(date)
-            var day = 0
-            var month = 0
-            var year = 0
-            mDate.observe(this) { mDate ->
-                hasAlarm = (mDate[0] > 0 || mDate[1] > 0 || mDate[2] > 0 || date[7] > 0)
-                day = mDate[2]
-                month = mDate[1]
-                year = mDate[0]
-                date[4] = year
-                date[5] = month
-                date[6] = day
-                date[7] = mDate[3]
-            }
-
-
-
+            val year = date[0]
+            val month = date[1]
+            val day = date[2]
+            val datetime = DatePickerDialog(
+                this,
+                OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
+                    date[4] = years
+                    date[5] = monthOfYear
+                    date[6] = dayOfMonth
+                    hasAlarm=true
+                }, year, month, day
+            )
+            datetime.show()
         }
 
         deleteImage.observe(this)
@@ -229,7 +231,6 @@ class NoteDetails : AppCompatActivity() {
             }
             imageListAdapter.submitList(imageBitmap.toList())
         }
-
     }
 
     private fun getImportant(radioGroup: RadioGroup): Int {

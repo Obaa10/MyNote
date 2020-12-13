@@ -40,5 +40,7 @@ interface NoteDao {
     @Query("Select * from note_table WHERE has_alarm = :key")
     fun getAllAlarms(key : Boolean = true) : Flow<List<Note>?>
 
+    @Query("Update note_table SET n_year = :year,n_month= :month,n_day= :day WHERE  id = :key")
+    suspend fun updateAlarm(key: Int,year: Int,month:Int,day:Int)
 
 }
