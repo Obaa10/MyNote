@@ -28,23 +28,12 @@ class UpcomingAlarmsAdapter(private val noteViewModel: NoteViewModel) :
     class ViewHolder(view: View,val viewModel: NoteViewModel) : RecyclerView.ViewHolder(view) {
         private val title: TextView = view.findViewById(R.id.date_title)
         private val date: TextView = view.findViewById(R.id.date_date)
-        private val remove : ImageButton = view.findViewById(R.id.remove_date)
-        private val edit : ImageButton = view.findViewById(R.id.edit_date)
         fun create(note: Note) {
             title.text = note.title
             val stringDate =
                 "${note.nYear}/${note.nMonth}/${note.nDay}" + if (note.nHours > 0) "${note.nHours}"
                 else ""
-
             date.text = stringDate
-            remove.setOnClickListener {
-                viewModel.removeAlarm.value=true
-                note.hasAlarm=false
-                viewModel.update(note)
-            }
-            edit.setOnClickListener {
-                viewModel.editAlarm.value= arrayListOf(note.id,note.year,note.nYear,note.month,note.nMonth,note.day,note.nDay)
-            }
         }
     }
 

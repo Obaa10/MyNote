@@ -1,12 +1,11 @@
 package com.test.mynote.ui
 
 import android.app.AlarmManager
-import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.PendingIntent
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,13 +18,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.test.mynote.NotifyByDate
 import com.test.mynote.R
+import com.test.mynote.adapter.SwipeHelper
+import com.test.mynote.adapter.SwipeHelper.UnderlayButtonClickListener
 import com.test.mynote.adapter.UpcomingAlarmsAdapter
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.absoluteValue
+
 
 class UpcomingAlarms : Fragment() {
     var mDate = MutableLiveData<ArrayList<Int>>(arrayListOf(0, 0, 0, 0))
@@ -49,7 +50,32 @@ class UpcomingAlarms : Fragment() {
             archiveNoteAdapter.submitList(it)
             list= it as ArrayList<Note>
         }
-
+        val swipeHelper: SwipeHelper = object : SwipeHelper(activity, recyclerView) {
+            override fun instantiateUnderlayButton(
+                viewHolder: RecyclerView.ViewHolder,
+                underlayButtons: MutableList<UnderlayButton>
+            ) {
+                underlayButtons.add(UnderlayButton(
+                    "Edit",
+                    0,
+                    Color.parseColor("#FF3C30"),
+                    UnderlayButtonClickListener {
+                        val note = list[it]
+                        noteViewModel.editAlarm.value= arrayListOf(note.id,note.year,note.nYear,note.month,note.nMonth,note.day,note.nDay)
+                    }
+                ))
+                underlayButtons.add(UnderlayButton(
+                    "Delete",
+                    0,
+                    Color.parseColor("#FF9502"),
+                    UnderlayButtonClickListener {
+                        noteViewModel.removeAlarm.value=true
+                        list[it].hasAlarm=false
+                        noteViewModel.update(list[it])
+                    }
+                ))
+            }
+        }
 
         noteViewModel.editAlarm.observe(this) {
             if (it[0] >= 0) {
