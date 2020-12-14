@@ -187,7 +187,7 @@ class UpcomingAlarms : Fragment() {
             noteViewModel.updateAlarm(id, nYear, nMonth, nDay)
             val alarmsDay =
                 (year - nYear) * 360 + ((month - nMonth) * 30).absoluteValue + day - nDay
-            Toast.makeText(activity!!,alarmsDay.toString(),Toast.LENGTH_LONG).show()
+            Toast.makeText(activity!!, "$alarmsDay day left to your date",Toast.LENGTH_LONG).show()
             time.timeInMillis = System.currentTimeMillis()
             time.add(Calendar.SECOND, (alarmsDay * 24 * 60 * 60))
             alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
