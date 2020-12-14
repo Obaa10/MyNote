@@ -8,7 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="border">#DCD5D5D5</color>
-    <color name="normal">#304FFE</color>
+    <color name="normal">#00BFA5</color>
     <color name="important">#FF6D00</color>
-    <color name="very_important">#FF0000</color>
+    <color name="very_important">#D50000</color>
 </resources>
