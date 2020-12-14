@@ -161,17 +161,15 @@ class NoteDetails : AppCompatActivity() {
                 alarmIntent.putExtra("name", noteTitle.text.toString())
                 val pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0)
                 val time = Calendar.getInstance()
-                if (Date(date[0], date[1], date[2]) < Date(
-                        date[4],
-                        date[5],
-                        date[6]
-                    ) || Date(date[4], date[5], date[6]) < Date(cYear, cMonth, cDay)
+                if (Date(date[0], date[1], date[2]) < Date(date[4],date[5],date[6])
+                    || Date(date[4], date[5], date[6]) < Date(cYear, cMonth, cDay)
                 ) {
                     Toast.makeText(this, "Alarm time is illogical", Toast.LENGTH_LONG).show()
                 } else {
                     val day =
-                        (date[0] - date[4]) * 360 + (date[1] - date[5] * 30).absoluteValue + date[3] + date[6]
+                        (date[0] - date[4]) * 360 + ((date[1] - date[5]) * 30).absoluteValue + date[2] - date[6]
                     time.timeInMillis = System.currentTimeMillis()
+                    Toast.makeText(this, "$day day left to your date",Toast.LENGTH_LONG).show()
                     time.add(Calendar.SECOND, (day * 24 * 60 * 60))
                     alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
                 }
@@ -221,6 +219,7 @@ class NoteDetails : AppCompatActivity() {
                     date[5] = monthOfYear + 1
                     date[6] = dayOfMonth
                     hasAlarm = true
+                    println("${date[4]}/${date[5]}/${date[6]}")
                 }, year, month, day
             )
             datetime.show()
@@ -269,7 +268,7 @@ class NoteDetails : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && data != null) {
             val listOfImages = images.value ?: arrayListOf("")
-            val list = arrayListOf<String>(data.data.toString())
+            val list = arrayListOf(data.data.toString())
             list.addAll(listOfImages)
             images.value = list
         }

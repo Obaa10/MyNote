@@ -189,7 +189,7 @@ class UpcomingAlarms : Fragment() {
                 (year - nYear) * 360 + ((month - nMonth) * 30).absoluteValue + day - nDay
             Toast.makeText(activity!!, "$alarmsDay day left to your date",Toast.LENGTH_LONG).show()
             time.timeInMillis = System.currentTimeMillis()
-            time.add(Calendar.SECOND, (alarmsDay * 24 * 60 * 60))
+            time.add(Calendar.SECOND, (alarmsDay * 24 * 60 * 60)+1)
             alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
         }
     }
