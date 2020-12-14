@@ -18,7 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".NotifyByDate" />
+        <receiver android:name=".notifyactivity.NotifyByDate" />
         <activity
             android:name=".NoteDetails"
             android:parentActivityName=".MainActivity">

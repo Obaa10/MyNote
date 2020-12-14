@@ -22,7 +22,7 @@ import com.test.mynote.MainActivity
 import com.test.mynote.NoteDetails
 import com.test.mynote.R
 import com.test.mynote.adapter.NoteListAdapter
-import com.test.mynote.adapter.SwipeToDeleteCallback
+import com.test.mynote.swipehelper.SwipeToDeleteCallback
 import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
@@ -123,12 +123,12 @@ class NotesFragment : Fragment() {
         val builder = AlertDialog.Builder(activity)
         builder.setTitle("Choose Important")
         builder.setMultiChoiceItems(listItems, booleanArray)
-        { dialog, which, isChecked ->
+        { _, which, isChecked ->
             booleanArray[which] = isChecked
         }
 
         builder.setPositiveButton("Ok")
-        { dialog, which -> mutableLiveData.value = 1 }
+        { _, _ -> mutableLiveData.value = 1 }
         builder.setNegativeButton("Cancel", null)
         val dialog = builder.create()
         dialog.show()

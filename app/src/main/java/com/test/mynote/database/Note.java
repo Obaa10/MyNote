@@ -5,7 +5,6 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import ir.mirrajabi.searchdialog.core.Searchable;
 
@@ -28,19 +27,19 @@ public class Note implements Searchable {
     @ColumnInfo(name = "important")
     public Integer important;
     @ColumnInfo(name = "completed")
-    public Boolean completed = false ;
+    public Boolean completed = false;
     @ColumnInfo(name = "archived")
     public Boolean archived = false;
     @ColumnInfo(name = "n_year")
-    public Integer nYear=0;
+    public Integer nYear = 0;
     @ColumnInfo(name = "n_month")
-    public Integer nMonth=0;
+    public Integer nMonth = 0;
     @ColumnInfo(name = "n_day")
-    public Integer nDay=0;
+    public Integer nDay = 0;
     @ColumnInfo(name = "n_hours")
-    public Integer nHours=0;
+    public Integer nHours = 0;
     @ColumnInfo(name = "has_alarm")
-    public Boolean hasAlarm = false ;
+    public Boolean hasAlarm = false;
 
     public Note(String title, String detail) {
         image.add("");
@@ -48,11 +47,11 @@ public class Note implements Searchable {
         this.detail = detail;
     }
 
-    public Note(Integer id, String title, String detail, ArrayList<String> image, ArrayList<Integer> date, Integer important,Boolean hasAlarm) {
+    public Note(Integer id, String title, String detail, ArrayList<String> image, ArrayList<Integer> date, Integer important, Boolean hasAlarm) {
         this.id = id;
         this.important = important;
         this.title = title;
-        this.hasAlarm=hasAlarm;
+        this.hasAlarm = hasAlarm;
         this.detail = detail;
         this.image = image;
         year = date.get(0);
@@ -60,11 +59,11 @@ public class Note implements Searchable {
         day = date.get(2);
         nYear = date.get(4);
         nMonth = date.get(5);
-        nDay= date.get(6);
+        nDay = date.get(6);
         nHours = date.get(7);
     }
 
-    public Note(Integer id, String title, String detail, ArrayList<String> image,Integer important) {
+    public Note(Integer id, String title, String detail, ArrayList<String> image, Integer important) {
         this.image.add("");
         this.id = id;
         this.important = important;
@@ -73,9 +72,9 @@ public class Note implements Searchable {
         this.image.addAll(image);
     }
 
-    public Note(String title, String detail, ArrayList<String> image, ArrayList<Integer> date,Integer important,Boolean hasAlarm) {
+    public Note(String title, String detail, ArrayList<String> image, ArrayList<Integer> date, Integer important, Boolean hasAlarm) {
         this.image = image;
-        this.hasAlarm=hasAlarm;
+        this.hasAlarm = hasAlarm;
         this.title = title;
         this.important = important;
         this.detail = detail;
@@ -84,11 +83,11 @@ public class Note implements Searchable {
         day = date.get(2);
         nYear = date.get(3);
         nMonth = date.get(4);
-        nDay= date.get(5);
+        nDay = date.get(5);
         nHours = date.get(6);
     }
 
-    public Note(String title, String detail, ArrayList<String> image,Integer important) {
+    public Note(String title, String detail, ArrayList<String> image, Integer important) {
         this.image.add("");
         this.important = important;
         this.image.addAll(image);

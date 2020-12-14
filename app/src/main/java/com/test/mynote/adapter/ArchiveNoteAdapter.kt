@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +16,7 @@ import com.test.mynote.database.Note
 import com.test.mynote.viewmodel.NoteViewModel
 import java.util.*
 
-class ArchiveNoteAdapter (private val noteViewModel: NoteViewModel) :
+class ArchiveNoteAdapter(private val noteViewModel: NoteViewModel) :
     ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_COMPARATOR) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteListAdapter.ViewHolder {
         val cardView = LayoutInflater.from(parent.context)
@@ -27,7 +26,7 @@ class ArchiveNoteAdapter (private val noteViewModel: NoteViewModel) :
 
     override fun onBindViewHolder(holder: NoteListAdapter.ViewHolder, position: Int) {
         val note = getItem(position)
-        holder.create(note,noteViewModel)
+        holder.create(note, noteViewModel)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -36,7 +35,6 @@ class ArchiveNoteAdapter (private val noteViewModel: NoteViewModel) :
         private val detail: TextView = view.findViewById(R.id.card_detail)
         private val deleteButton: ImageButton = view.findViewById(R.id.button)
         private val cardColor: TextView = view.findViewById(R.id.color)
-        private val cardView : CardView = view.findViewById(R.id.note_card)
         fun create(note: Note, noteViewModel: NoteViewModel) {
             title.text = note.title
             detail.text = note.detail
@@ -87,7 +85,8 @@ class ArchiveNoteAdapter (private val noteViewModel: NoteViewModel) :
             }
         }
     }
-        companion object {
+
+    companion object {
         private val NOTES_COMPARATOR = object : DiffUtil.ItemCallback<Note>() {
             override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
                 return oldItem.title == newItem.title

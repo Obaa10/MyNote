@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.test.mynote.NoteDetails
 import com.test.mynote.R
 
-class ImageAdapter() :
+class ImageAdapter :
     ListAdapter<Bitmap, ImageAdapter.ViewHolder>(NOTES_COMPARATOR) {
 
 
@@ -28,8 +28,8 @@ class ImageAdapter() :
         holder.create(image)
         holder.removeButton.setOnClickListener {
             holder.image.setImageDrawable(null)
-            it.visibility=View.INVISIBLE
-            NoteDetails.deleteImage.value=position
+            it.visibility = View.INVISIBLE
+            NoteDetails.deleteImage.value = position
         }
     }
 

@@ -17,10 +17,9 @@ class MainActivity : AppCompatActivity() {
         //Attach the SectionsPagerAdapter to the ViewPager
         val pagerAdapter = SectionsPagerAdapter(supportFragmentManager)
         val pager = findViewById<View>(R.id.pager) as ViewPager
-        val id = 1
         pager.adapter = pagerAdapter
-        pager.currentItem= id
-        println("********************************"+pager.currentItem)
+        //Start activity with notes fragment
+        pager.currentItem= 1
         val tabLayout = findViewById<View>(R.id.tabs) as TabLayout
         tabLayout.setupWithViewPager(pager)
     }

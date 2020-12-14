@@ -1,15 +1,13 @@
-package com.test.mynote
+package com.test.mynote.notifyactivity
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.TaskStackBuilder
-import androidx.core.graphics.drawable.toDrawable
+import com.test.mynote.R
 
 
 class NotifyByDate() : BroadcastReceiver() {
@@ -17,7 +15,9 @@ class NotifyByDate() : BroadcastReceiver() {
         val name = intent.getStringExtra("name")
         val date = intent.getIntegerArrayListExtra("date")!!
         val sDate = "${date[0]}/${date[1]}/${date[2]}"
-        val builder = NotificationCompat.Builder(context!!, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context!!,
+            CHANNEL_ID
+        )
             .setSmallIcon(R.drawable.unnamed)
             .setContentTitle(name)
             .setContentText("You have a Date at $sDate")

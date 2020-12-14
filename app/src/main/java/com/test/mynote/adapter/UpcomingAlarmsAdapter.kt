@@ -3,7 +3,6 @@ package com.test.mynote.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -14,18 +13,18 @@ import com.test.mynote.viewmodel.NoteViewModel
 
 class UpcomingAlarmsAdapter(private val noteViewModel: NoteViewModel) :
     ListAdapter<Note, UpcomingAlarmsAdapter.ViewHolder>(NOTES_COMPARATOR) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UpcomingAlarmsAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val cardView = LayoutInflater.from(parent.context)
             .inflate(R.layout.date_card, parent, false)
-        return UpcomingAlarmsAdapter.ViewHolder(cardView,noteViewModel)
+        return ViewHolder(cardView, noteViewModel)
     }
 
-    override fun onBindViewHolder(holder: UpcomingAlarmsAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val note = getItem(position)
         holder.create(note)
     }
 
-    class ViewHolder(view: View,val viewModel: NoteViewModel) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View, val viewModel: NoteViewModel) : RecyclerView.ViewHolder(view) {
         private val title: TextView = view.findViewById(R.id.date_title)
         private val date: TextView = view.findViewById(R.id.date_date)
         fun create(note: Note) {
