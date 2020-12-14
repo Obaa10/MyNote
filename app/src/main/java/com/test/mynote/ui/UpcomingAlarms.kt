@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -46,10 +47,15 @@ class UpcomingAlarms : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
         val archiveNoteAdapter = UpcomingAlarmsAdapter(noteViewModel)
         recyclerView.adapter = archiveNoteAdapter
+        val backGround : ImageView = view.findViewById(R.id.upcoming_background)
+
         noteViewModel.getAllAlarms().observe(this) {
             archiveNoteAdapter.submitList(it)
             list= it as ArrayList<Note>
+            if(it.isEmpty()) backGround.visibility=View.VISIBLE
+            else backGround.visibility=View.INVISIBLE
         }
+
         val swipeHelper: SwipeHelper = object : SwipeHelper(activity, recyclerView) {
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder,
@@ -151,6 +157,10 @@ class UpcomingAlarms : Fragment() {
 
     private fun addAlarm(year: Int, nYear: Int, month: Int, nMonth: Int, day: Int, nDay: Int
                          , noteViewModel:NoteViewModel, id:Int) {
+        val c = Calendar.getInstance()
+        val cYear = c.get(Calendar.YEAR)
+        val cMonth = c.get(Calendar.MONTH)
+        val cDay = c.get(Calendar.DAY_OF_MONTH)
         val alarmMgr =
             activity!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(activity, NotifyByDate::class.java)
@@ -158,7 +168,7 @@ class UpcomingAlarms : Fragment() {
         intent.putExtra("name", list.find { note -> note.id==id }?.title)
         val pendingIntent = PendingIntent.getBroadcast(activity, 0, intent, 0)
         val time = Calendar.getInstance()
-        if(Date(year,month,day) < (Date(nYear,nMonth,nDay))){
+        if(Date(year,month,day) < Date(nYear,nMonth,nDay) || Date(nYear,nMonth,nDay) < Date(cYear,cMonth,cDay)){
             Toast.makeText(activity,"Error",Toast.LENGTH_LONG).show()
         }
         else {

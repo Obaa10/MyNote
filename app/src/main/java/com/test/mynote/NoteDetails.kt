@@ -144,6 +144,10 @@ class NoteDetails : AppCompatActivity() {
                 }
             }
             if(hasAlarm) {
+                val c = Calendar.getInstance()
+                val cYear = c.get(Calendar.YEAR)
+                val cMonth = c.get(Calendar.MONTH)
+                val cDay = c.get(Calendar.DAY_OF_MONTH)
                 val alarmMgr =
                     getSystemService(Context.ALARM_SERVICE) as AlarmManager
                 val intent = Intent(this, NotifyByDate::class.java)
@@ -151,7 +155,7 @@ class NoteDetails : AppCompatActivity() {
                 intent.putExtra("name", title.text.toString())
                 val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
                 val time = Calendar.getInstance()
-                if(Date(date[0],date[1],date[2]) < (Date(date[4],date[5],date[6]))){
+                if(Date(date[0],date[1],date[2]) < Date(date[4],date[5],date[6]) ||Date(date[4],date[5],date[6]) < Date(cYear,cMonth,cDay)){
                     Toast.makeText(this,"Error",Toast.LENGTH_LONG).show()
                 }
                 else {

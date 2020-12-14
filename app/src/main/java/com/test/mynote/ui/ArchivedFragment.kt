@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ListAdapter
 import android.widget.ListView
 import androidx.lifecycle.observe
@@ -33,9 +34,12 @@ class ArchivedFragment : Fragment() {
             NoteViewModelFactory(activity!!.application).create(NoteViewModel::class.java)
         recyclerView.layoutManager = LinearLayoutManager(activity)
         val archiveNoteAdapter = ArchiveNoteAdapter(noteViewModel)
+        val backGround : ImageView = view.findViewById(R.id.archived_background)
         recyclerView.adapter = archiveNoteAdapter
         noteViewModel.getAllArchivedNotes().observe(this){
             archiveNoteAdapter.submitList(it)
+            if(it!!.isEmpty())  backGround.visibility=View.VISIBLE
+            else backGround.visibility=View.INVISIBLE
         }
         return view
     }

@@ -3,7 +3,7 @@ package com.test.mynote.database
 import android.app.Application
 import androidx.room.*
 
-@Database(entities = [Note::class], version = 1)
+@Database(entities = [Note::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class NoteRoomDatabase : RoomDatabase() {
 

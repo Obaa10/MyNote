@@ -35,10 +35,24 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <ImageView
+        android:id="@+id/upcoming_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="90dp"
+        android:background="#00FFFFFF"
+        android:visibility="visible"
+        app:srcCompat="@drawable/pngegg" />
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/upcoming_list"
         />
-
+</FrameLayout>
 </LinearLayout>
