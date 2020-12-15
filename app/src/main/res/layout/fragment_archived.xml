@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/back_ground"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.ArchivedFragment">
@@ -16,7 +17,7 @@
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="#D65932"
+            android:background="@color/toolbar"
             app:layout_scrollFlags="scroll|enterAlways">
                 <TextView
                     android:layout_width="wrap_content"

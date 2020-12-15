@@ -15,7 +15,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="#D65932">
+            android:background="@color/toolbar">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -56,6 +56,7 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/back_ground"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
@@ -159,7 +160,7 @@
                 android:layout_marginBottom="16dp"
                 android:contentDescription="@string/save"
                 android:src="@drawable/ic_baseline_check_24"
-                app:backgroundTint="#FF9100"
+                app:backgroundTint="@color/action_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -171,7 +172,7 @@
                 android:layout_marginBottom="16dp"
                 android:contentDescription="@string/add_image"
                 android:src="@drawable/ic_baseline_image_24"
-                app:backgroundTint="#FF9100"
+                app:backgroundTint="@color/action_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 

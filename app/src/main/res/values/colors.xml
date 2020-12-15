@@ -10,5 +10,8 @@
     <color name="border">#DCD5D5D5</color>
     <color name="normal">#00BFA5</color>
     <color name="important">#FF6D00</color>
+    <color name="back_ground">#FFF8E1</color>
+    <color name="toolbar">#FF6F00</color>
+    <color name="action_button">#FF8F00</color>
     <color name="very_important">#D50000</color>
 </resources>
