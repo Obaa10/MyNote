@@ -26,13 +26,4 @@ class SectionsPagerAdapter(manager: FragmentManager) : FragmentPagerAdapter(
         }
     }
 
-    override fun getPageTitle(position: Int): CharSequence? {
-        return when (position) {
-            1 -> "My Notes"
-            0 -> "Archived notes"
-            2 -> "Upcoming alarms"
-            else -> null
-        }
-
-    }
 }

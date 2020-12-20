@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:padding="10dp"
     >
     <TextView
         android:id="@+id/date"
@@ -58,8 +59,8 @@
 
         <ImageButton
             android:id="@+id/button"
-            android:layout_width="50dp"
-            android:layout_height="42dp"
+            android:layout_width="42dp"
+            android:layout_height="47dp"
             android:background="#001E9797"
             android:contentDescription="@string/delete"
             android:src="@drawable/ic_baseline_delete_24"
