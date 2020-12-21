@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -81,9 +82,20 @@ class UpcomingAlarms : Fragment() {
                     0,
                     Color.parseColor("#FF9502"),
                     UnderlayButtonClickListener {
-                        noteViewModel.removeAlarm.value = true
-                        list[it].hasAlarm = false
-                        noteViewModel.update(list[it])
+                        val show: Any = AlertDialog.Builder(activity!!)
+                            .setTitle("Delete Alarm")
+                            .setMessage("Are you sour you want to delete this alarm ?")
+                            .setPositiveButton("YES"
+                            ) { dialog, _ -> // The user wants to leave - so dismiss the dialog and exit
+                                noteViewModel.removeAlarm.value = true
+                                list[it].hasAlarm = false
+                                noteViewModel.update(list[it])
+                                dialog.dismiss()
+                            }.setNegativeButton("NO"
+                            ) { dialog, _ -> // The user is not sure, so you can exit or just stay
+                                archiveNoteAdapter.notifyItemChanged(it)
+                                dialog.dismiss()
+                            }.show()
                     }
                 ))
             }

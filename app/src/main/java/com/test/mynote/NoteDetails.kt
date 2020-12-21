@@ -7,6 +7,7 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.PendingIntent
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -16,6 +17,7 @@ import android.os.ParcelFileDescriptor
 import android.text.TextUtils
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -121,7 +123,18 @@ class NoteDetails : AppCompatActivity() {
         saveButton.setOnClickListener {
             val replyIntent = Intent()
             if (TextUtils.isEmpty(noteTitle.text)) {
-                setResult(Activity.RESULT_CANCELED, replyIntent)
+                val show: Any = AlertDialog.Builder(this)
+                    .setTitle("You Have To Insert Title")
+                    .setMessage("Exite without Save")
+                    .setPositiveButton("No"
+                    ) { dialog, _ ->
+                        dialog.dismiss()
+                    }.setNegativeButton("Exite"
+                    ) { dialog, _ ->
+                        setResult(Activity.RESULT_CANCELED, replyIntent)
+                        finish()
+                        dialog.dismiss()
+                    }.show()
             } else {
                 if (isEmpty) {
                     val imageUri: ArrayList<String> = images.value ?: arrayListOf("")
@@ -148,6 +161,7 @@ class NoteDetails : AppCompatActivity() {
                         )
                     )
                 }
+                finish()
             }
             if (hasAlarm) {
                 val c = Calendar.getInstance()
@@ -180,7 +194,6 @@ class NoteDetails : AppCompatActivity() {
                 }
                 noteViewModel.removeAlarm.value = false
             }
-            finish()
         }
 
         //Insert image
@@ -248,6 +261,21 @@ class NoteDetails : AppCompatActivity() {
             }
             imageListAdapter.submitList(imageBitmap.toList())
         }
+    }
+
+    override fun onBackPressed() {
+        val show: Any = AlertDialog.Builder(this)
+            .setTitle("Note will not be save")
+            .setMessage("Are you sour you want to leave ?")
+            .setPositiveButton("YES"
+            ) { dialog, _ -> // The user wants to leave - so dismiss the dialog and exit
+                finish()
+                dialog.dismiss()
+            }.setNegativeButton("BACK"
+            ) { dialog, _ -> // The user is not sure, so you can exit or just stay
+                dialog.dismiss()
+            }.show()
+
     }
 
     private fun getImportant(radioGroup: RadioGroup): Int {
