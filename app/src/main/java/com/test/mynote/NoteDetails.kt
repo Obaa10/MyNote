@@ -1,11 +1,8 @@
 package com.test.mynote
 
 import android.Manifest
-import android.app.Activity
-import android.app.AlarmManager
-import android.app.DatePickerDialog
+import android.app.*
 import android.app.DatePickerDialog.OnDateSetListener
-import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -20,6 +17,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
@@ -50,6 +48,7 @@ class NoteDetails : AppCompatActivity() {
     }
 
     private lateinit var images: MutableLiveData<ArrayList<String>>
+    val date = arrayListOf(0, 0, 0, 0, 0, 0, 0, 0,0,0,0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +79,6 @@ class NoteDetails : AppCompatActivity() {
 
         var isEmpty = true
         var noteId = 0
-        val date = arrayListOf(0, 0, 0, 0, 0, 0, 0, 0)
         var noteLiveData: LiveData<Note>?
         var nDate = Date()
         var hasAlarm = false
@@ -175,16 +173,15 @@ class NoteDetails : AppCompatActivity() {
                 alarmIntent.putExtra("name", noteTitle.text.toString())
                 val pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0)
                 val time = Calendar.getInstance()
-                if (Date(date[0], date[1], date[2]) < Date(date[4],date[5],date[6])
-                    || Date(date[4], date[5], date[6]) < Date(cYear, cMonth, cDay)
-                ) {
-                    Toast.makeText(this, "Alarm time is illogical", Toast.LENGTH_LONG).show()
+                if (Date(date[0], date[1], date[2],date[7],date[8]) < Date(date[4],date[5],date[6],date[9],date[10])
+                    || Date(date[4], date[5], date[6]) < Date(cYear, cMonth, cDay)) {
                 } else {
-                    val day =
-                        (date[0] - date[4]) * 360 + ((date[1] - date[5]) * 30).absoluteValue + date[2] - date[6]
+                    var day =  (date[0] - date[4]) * 360 + (((date[1] - date[5]) * 30).absoluteValue + date[2] - date[6])
+                    val noteDay = day
+                    day = day * 24 * 60 * 60 +((((date[7]*60)+date[8])-((date[9]*60)+date[10])).absoluteValue*60)
                     time.timeInMillis = System.currentTimeMillis()
-                    Toast.makeText(this, "$day day left to your date",Toast.LENGTH_LONG).show()
-                    time.add(Calendar.SECOND, (day * 24 * 60 * 60))
+                    Toast.makeText(this, "$noteDate day left to your alarm",Toast.LENGTH_LONG).show()
+                    time.add(Calendar.SECOND, (day))
                     alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
                 }
                 noteViewModel.removeAlarm.observe(this) {
@@ -203,39 +200,13 @@ class NoteDetails : AppCompatActivity() {
 
         //Insert date
         dateButton.setOnClickListener {
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-            val datetime = DatePickerDialog(
-                this,
-                OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
-                    date[0] = years
-                    date[1] = monthOfYear + 1
-                    date[2] = dayOfMonth
-                    noteDate.text = "$years/$monthOfYear/$dayOfMonth"
-                }, year, month, day
-            )
-            datetime.show()
+            pickDateTime(true)
             alarmButton.visibility = View.VISIBLE
         }
 
         //Add alarm
         alarmButton.setOnClickListener {
-            val year = date[0]
-            val month = date[1]
-            val day = date[2]
-            val datetime = DatePickerDialog(
-                this,
-                OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
-                    date[4] = years
-                    date[5] = monthOfYear + 1
-                    date[6] = dayOfMonth
-                    hasAlarm = true
-                    println("${date[4]}/${date[5]}/${date[6]}")
-                }, year, month, day
-            )
-            datetime.show()
+            pickDateTime(false)
         }
 
         deleteImage.observe(this)
@@ -326,6 +297,56 @@ class NoteDetails : AppCompatActivity() {
             type = "image/*"
         }
         startActivityForResult(intent1, 2)
+    }
+
+    private fun pickDateTime(isDate : Boolean) {
+        val currentDateTime = Calendar.getInstance()
+        val startYear = currentDateTime.get(Calendar.YEAR)
+        val startMonth = currentDateTime.get(Calendar.MONTH)
+        val startDay = currentDateTime.get(Calendar.DAY_OF_MONTH)
+        val startHour = currentDateTime.get(Calendar.HOUR_OF_DAY)
+        val startMinute = currentDateTime.get(Calendar.MINUTE)
+
+        DatePickerDialog(this, DatePickerDialog.OnDateSetListener { _, year, month, day ->
+            TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+                if(isDate) {
+                    date[0] = year
+                    date[1] = month
+                    date[2] = day
+                    date[7] = hour
+                    date[8] = minute
+                }
+                else{
+                    when {
+                        Date(date[0], date[1], date[2],date[7],date[8]) < Date(year,month,day,hour,minute) -> {
+                            alarmIllogical(false)
+                        }
+                        Date(date[4], date[5], date[6]) < Date(startYear, startMonth, startDay) -> {
+                            alarmIllogical(true)
+                        }
+                        else -> {
+                            date[4] = year
+                            date[5] = month
+                            date[6] = day
+                            date[9] = hour
+                            date[10] = minute
+                        }
+                    }
+                }
+            }, startHour, startMinute, false).show()
+        }, startYear, startMonth, startDay).show()
+    }
+
+    private fun alarmIllogical(before : Boolean){
+        val error = if(before) "Alarm is in the past"
+        else "Alarm is after the note's date"
+        val show: Any = AlertDialog.Builder(this)
+            .setTitle("Alarm time is illogical")
+            .setMessage(error)
+            .setPositiveButton("OK"
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }.show()
     }
 
     /*  private fun getTime(date: ArrayList<Int>) {
