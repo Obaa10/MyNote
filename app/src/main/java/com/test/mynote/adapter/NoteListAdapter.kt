@@ -47,7 +47,24 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
                 if (!noteViewModel.yearList.contains(Date(note.year, note.month, note.day))) {
                     val date = Date(note.year, note.month, note.day)
                     noteViewModel.yearList.add(date)
-                    "${note.year}/${note.month}/${note.day}"
+                    val currentDateTime = Calendar.getInstance()
+                    val startYear = currentDateTime.get(Calendar.YEAR)
+                    val startMonth = currentDateTime.get(Calendar.MONTH)+1
+                    val startDay = currentDateTime.get(Calendar.DAY_OF_MONTH)
+                    var day =0
+                    if(note.year==startYear) {
+                        if (note.month == startMonth) {
+                            if (note.day == startDay)
+                                day = 1
+                            else if(note.day == startDay+1)
+                                day =2
+                        }
+                    }
+                    when(day){
+                        1 -> "Today"
+                        2 -> "Tomorrow"
+                        else -> "${note.year}/${note.month}/${note.day}"
+                    }
                 } else ""
             } else null
 

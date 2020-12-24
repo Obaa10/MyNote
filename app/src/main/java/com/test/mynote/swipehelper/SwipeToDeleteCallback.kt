@@ -20,7 +20,7 @@ abstract class SwipeToDeleteCallback(
     ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
     private val backgroundColor = Color.parseColor("#f44336")
     private val background = ColorDrawable()
-    private var deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_check_24)!!
+    var deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_check_24)!!
     private val intrinsicWidth = deleteIcon.intrinsicWidth
     private val intrinsicHeight = deleteIcon.intrinsicHeight
 

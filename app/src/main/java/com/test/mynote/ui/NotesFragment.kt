@@ -22,8 +22,8 @@ import com.test.mynote.MainActivity
 import com.test.mynote.NoteDetails
 import com.test.mynote.R
 import com.test.mynote.adapter.NoteListAdapter
-import com.test.mynote.swipehelper.SwipeToDeleteCallback
 import com.test.mynote.database.Note
+import com.test.mynote.swipehelper.SwipeToDeleteCallback
 import com.test.mynote.viewmodel.NoteViewModel
 import com.test.mynote.viewmodel.NoteViewModelFactory
 import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat
@@ -53,7 +53,8 @@ class NotesFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
         val recyclerViewAdapter = NoteListAdapter(noteViewModel)
         recyclerView.adapter = recyclerViewAdapter
-        val swipeHandler = object : SwipeToDeleteCallback(activity!!.applicationContext, noteViewModel, MainActivity()) {
+        val swipeHandler = object :
+            SwipeToDeleteCallback(activity!!.applicationContext, noteViewModel, MainActivity()) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 recyclerViewAdapter.completedNote(
                     viewHolder.adapterPosition,
@@ -77,7 +78,7 @@ class NotesFragment : Fragment() {
                     val checkedId = arrayListOf<Int>(5, 5, 5)
                     checkedItems.forEachIndexed { index, b -> if (b) checkedId[index] = index + 1 }
                     mList = mList?.filter { checkedId.contains(it.important) }
-                    mList = mList?.filter { it.archived==false }
+                    mList = mList?.filter { it.archived == false }
                     recyclerViewAdapter.submitList(mList)
                     if (mList?.size != 0) {
                         noNoteToShowText.visibility = View.INVISIBLE
@@ -146,9 +147,9 @@ class NotesFragment : Fragment() {
                 intentData.getIntegerArrayListExtra(NoteDetails.EXTRA_REPLY_DATE)?.let { date ->
                     val image = intentData.getStringArrayListExtra("image") ?: arrayListOf("")
                     val important = date[3]
-                    val hasAlarms = (date[4]>0||date[5]>0||date[6]>0||date[7]>0)
+                    val hasAlarms = (date[4] > 0 || date[5] > 0 || date[6] > 0 || date[7] > 0)
                     date.removeAt(3)
-                    val note = Note(reply[0], reply[1], image, date, important,hasAlarms)
+                    val note = Note(reply[0], reply[1], image, date, important, hasAlarms)
                     noteViewModel.insert(note)
                 }
             }
