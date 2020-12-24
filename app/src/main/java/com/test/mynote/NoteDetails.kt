@@ -49,6 +49,7 @@ class NoteDetails : AppCompatActivity() {
 
     private lateinit var images: MutableLiveData<ArrayList<String>>
     val date = arrayListOf(0, 0, 0, 0, 0, 0, 0, 0,0,0,0)
+    var hasAlarm = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +82,6 @@ class NoteDetails : AppCompatActivity() {
         var noteId = 0
         var noteLiveData: LiveData<Note>?
         var nDate = Date()
-        var hasAlarm = false
 
         //Insert note
         intent?.let {
@@ -164,7 +164,7 @@ class NoteDetails : AppCompatActivity() {
             if (hasAlarm) {
                 val c = Calendar.getInstance()
                 val cYear = c.get(Calendar.YEAR)
-                val cMonth = c.get(Calendar.MONTH)
+                val cMonth = c.get(Calendar.MONTH)+1
                 val cDay = c.get(Calendar.DAY_OF_MONTH)
                 val cHour = c.get(Calendar.HOUR_OF_DAY)
                 val cMinute = c.get(Calendar.MINUTE)
@@ -208,7 +208,6 @@ class NoteDetails : AppCompatActivity() {
 
         //Add alarm
         alarmButton.setOnClickListener {
-            hasAlarm=true
             pickDateTime(false)
         }
 
@@ -318,6 +317,7 @@ class NoteDetails : AppCompatActivity() {
                     date[2] = day
                     date[7] = hour
                     date[8] = minute
+                    hasAlarm=false
                 }
                 else{
                     when {
@@ -330,6 +330,7 @@ class NoteDetails : AppCompatActivity() {
                             alarmIllogical(true)
                         }
                         else -> {
+                            hasAlarm=true
                             date[4] = year
                             date[5] = month+1
                             date[6] = day
@@ -343,6 +344,7 @@ class NoteDetails : AppCompatActivity() {
     }
 
     private fun alarmIllogical(before : Boolean){
+        hasAlarm=false
         val error = if(before) "Alarm is in the past"
         else "Alarm is after the note's date"
         val show: Any = AlertDialog.Builder(this)

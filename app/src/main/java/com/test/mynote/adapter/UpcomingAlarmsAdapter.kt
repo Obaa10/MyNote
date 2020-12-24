@@ -30,7 +30,7 @@ class UpcomingAlarmsAdapter(private val noteViewModel: NoteViewModel) :
         fun create(note: Note) {
             title.text = note.title
             val stringDate =
-                "${note.nYear}/${note.nMonth}/${note.nDay}" + if (note.nHours > 0) "${note.nHours}"
+                if(note.nYear*note.nMonth!=0) "${note.nYear}/${note.nMonth}/${note.nDay}"
                 else ""
             date.text = stringDate
         }
