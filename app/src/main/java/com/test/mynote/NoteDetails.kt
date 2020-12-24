@@ -123,11 +123,11 @@ class NoteDetails : AppCompatActivity() {
             if (TextUtils.isEmpty(noteTitle.text)) {
                 val show: Any = AlertDialog.Builder(this)
                     .setTitle("You Have To Insert Title")
-                    .setMessage("Exite without Save")
+                    .setMessage("Exit without Save")
                     .setPositiveButton("No"
                     ) { dialog, _ ->
                         dialog.dismiss()
-                    }.setNegativeButton("Exite"
+                    }.setNegativeButton("Exit"
                     ) { dialog, _ ->
                         setResult(Activity.RESULT_CANCELED, replyIntent)
                         finish()
@@ -166,6 +166,8 @@ class NoteDetails : AppCompatActivity() {
                 val cYear = c.get(Calendar.YEAR)
                 val cMonth = c.get(Calendar.MONTH)
                 val cDay = c.get(Calendar.DAY_OF_MONTH)
+                val cHour = c.get(Calendar.HOUR_OF_DAY)
+                val cMinute = c.get(Calendar.MINUTE)
                 val alarmMgr =
                     getSystemService(Context.ALARM_SERVICE) as AlarmManager
                 val alarmIntent = Intent(this, NotifyByDate::class.java)
@@ -176,11 +178,11 @@ class NoteDetails : AppCompatActivity() {
                 if (Date(date[0], date[1], date[2],date[7],date[8]) < Date(date[4],date[5],date[6],date[9],date[10])
                     || Date(date[4], date[5], date[6]) < Date(cYear, cMonth, cDay)) {
                 } else {
-                    var day =  (date[0] - date[4]) * 360 + (((date[1] - date[5]) * 30).absoluteValue + date[2] - date[6])
+                    var day =  (date[4]-cYear) * 360 + (((date[5] - cMonth) * 30) + (date[6] - cDay))
                     val noteDay = day
-                    day = day * 24 * 60 * 60 +((((date[7]*60)+date[8])-((date[9]*60)+date[10])).absoluteValue*60)
+                    day = day * 24 * 60 * 60 +((((date[9]*60)+date[10])-((cHour*60)+cMinute)).absoluteValue*60)
                     time.timeInMillis = System.currentTimeMillis()
-                    Toast.makeText(this, "$noteDate day left to your alarm",Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "$noteDay day left to your alarm",Toast.LENGTH_LONG).show()
                     time.add(Calendar.SECOND, (day))
                     alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
                 }
@@ -206,6 +208,7 @@ class NoteDetails : AppCompatActivity() {
 
         //Add alarm
         alarmButton.setOnClickListener {
+            hasAlarm=true
             pickDateTime(false)
         }
 
@@ -311,22 +314,24 @@ class NoteDetails : AppCompatActivity() {
             TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, hour, minute ->
                 if(isDate) {
                     date[0] = year
-                    date[1] = month
+                    date[1] = month+1
                     date[2] = day
                     date[7] = hour
                     date[8] = minute
                 }
                 else{
                     when {
-                        Date(date[0], date[1], date[2],date[7],date[8]) < Date(year,month,day,hour,minute) -> {
+                        Date(date[0], date[1], date[2],date[7],date[8])
+                                < Date(year,month,day,hour,minute) -> {
                             alarmIllogical(false)
                         }
-                        Date(date[4], date[5], date[6]) < Date(startYear, startMonth, startDay) -> {
+                        Date(year,month,day,hour,minute)
+                                < Date(startYear, startMonth, startDay,startHour,startMinute) -> {
                             alarmIllogical(true)
                         }
                         else -> {
                             date[4] = year
-                            date[5] = month
+                            date[5] = month+1
                             date[6] = day
                             date[9] = hour
                             date[10] = minute

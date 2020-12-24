@@ -3,6 +3,7 @@ package com.test.mynote.ui
 import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.app.PendingIntent
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -17,10 +18,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.test.mynote.notifyactivity.NotifyByDate
 import com.test.mynote.R
 import com.test.mynote.adapter.UpcomingAlarmsAdapter
 import com.test.mynote.database.Note
+import com.test.mynote.notifyactivity.NotifyByDate
 import com.test.mynote.swipehelper.SwipeHelper
 import com.test.mynote.swipehelper.SwipeHelper.UnderlayButtonClickListener
 import com.test.mynote.viewmodel.NoteViewModel
@@ -85,13 +86,15 @@ class UpcomingAlarms : Fragment() {
                         val show: Any = AlertDialog.Builder(activity!!)
                             .setTitle("Delete Alarm")
                             .setMessage("Are you sour you want to delete this alarm ?")
-                            .setPositiveButton("YES"
+                            .setPositiveButton(
+                                "YES"
                             ) { dialog, _ -> // The user wants to leave - so dismiss the dialog and exit
                                 noteViewModel.removeAlarm.value = true
                                 list[it].hasAlarm = false
                                 noteViewModel.update(list[it])
                                 dialog.dismiss()
-                            }.setNegativeButton("NO"
+                            }.setNegativeButton(
+                                "NO"
                             ) { dialog, _ -> // The user is not sure, so you can exit or just stay
                                 archiveNoteAdapter.notifyItemChanged(it)
                                 dialog.dismiss()
@@ -104,83 +107,72 @@ class UpcomingAlarms : Fragment() {
         noteViewModel.editAlarm.observe(this) {
             if (it[0] >= 0) {
                 noteViewModel.removeAlarm.value = true
-                val c = Calendar.getInstance()
-                var year = c.get(Calendar.YEAR)
-                var month = c.get(Calendar.MONTH)
-                var day = c.get(Calendar.DAY_OF_MONTH)
-                val datetime = DatePickerDialog(
-                    activity!!,
-                    DatePickerDialog.OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
-                        year = years
-                        month = monthOfYear+1
-                        day = dayOfMonth
-                        addAlarm(it[1], years, it[3], month, it[5], day, noteViewModel, it[0])
-                    }, year, month, day
-                )
-                datetime.show()
+                pickDateTime(it[1],it[3],it[5],noteViewModel,it[0])
             }
         }
-
         return view
     }
 
-    /*  private fun getTime(date: ArrayList<Int>) {
-          val listItems = arrayOf("Two days", "One day", "One hour", "Custom time")
-          val mBuilder = AlertDialog.Builder(activity)
-          mBuilder.setTitle("Notify me..")
-          val mDates = arrayListOf<Int>(0, 0, 0, 0)
-          mBuilder.setSingleChoiceItems(listItems, -1,
-              DialogInterface.OnClickListener { dialogInterface, i ->
-                  when (i) {
-                      0 -> {
-                          mDates[2] = date[2] - 2
-                          mDates[0] = date[0]
-                          mDates[1] = date[1]
-                      }
-                      1 -> {
-                          mDates[2] = date[2] - 1
-                          mDates[0] = date[0]
-                          mDates[1] = date[1]
-                      }
-                      2 -> {
-                          mDates[3] = 1
-                          mDates[2] = date[2]
-                          mDates[0] = date[0]
-                          mDates[1] = date[1]
-                      }
-                      3 -> {
-                          val c = Calendar.getInstance()
-                          val year = c.get(Calendar.YEAR)
-                          val month = c.get(Calendar.MONTH)
-                          val day = c.get(Calendar.DAY_OF_MONTH)
-                          val datetime = DatePickerDialog(
-                              activity!!,
-                              DatePickerDialog.OnDateSetListener { _, years, monthOfYear, dayOfMonth ->
-                                  mDates[0] = years
-                                  mDates[1] = monthOfYear+1
-                                  mDates[2] = dayOfMonth
-                                  mDate.value = mDates
-                              }, year, month, day
-                          )
-                          datetime.show()
-                      }
-                  }
-                  mDate.value = mDates
-                  dialogInterface.dismiss()
-              })
-          val mDialog = mBuilder.create()
-          mDialog.show()
-      }
-  */
+    private fun pickDateTime(
+        nYear: Int, nMonth: Int, nDay: Int,
+        noteViewModel: NoteViewModel, id: Int
+    ) {
+        val currentDateTime = Calendar.getInstance()
+        val startYear = currentDateTime.get(Calendar.YEAR)
+        val startMonth = currentDateTime.get(Calendar.MONTH)
+        val startDay = currentDateTime.get(Calendar.DAY_OF_MONTH)
+        val startHour = currentDateTime.get(Calendar.HOUR_OF_DAY)
+        val startMinute = currentDateTime.get(Calendar.MINUTE)
+
+        DatePickerDialog(activity!!, DatePickerDialog.OnDateSetListener { _, year, month, day ->
+            TimePickerDialog(activity!!, TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+                when {
+                    Date(year, month, day, hour, minute)
+                            < Date(startYear, startMonth,startDay,startHour,startMinute) -> {
+                        alarmIllogical(true)
+                    }
+                    Date(nYear, nMonth, nDay) < Date(year, month, day) -> {
+                        alarmIllogical(false)
+                    }
+                    else -> {
+                        addAlarm(
+                            year,
+                            startYear,
+                            month,
+                            startMonth,
+                            day,
+                            startDay,
+                            noteViewModel,
+                            id,
+                            hour,
+                            startHour,
+                            minute,
+                            startMinute
+                        )
+                    }
+                }
+            }, startHour, startMinute, false).show()
+        }, startYear, startMonth, startDay).show()
+    }
+
+    private fun alarmIllogical(before: Boolean) {
+        val error = if (before) "Alarm is in the past"
+        else "Alarm is after the note's date"
+        val show: Any = AlertDialog.Builder(activity!!)
+            .setTitle("Alarm time is illogical")
+            .setMessage(error)
+            .setPositiveButton(
+                "OK"
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }.show()
+    }
 
     private fun addAlarm(
         year: Int, nYear: Int, month: Int, nMonth: Int, day: Int, nDay: Int
-        , noteViewModel: NoteViewModel, id: Int
+        , noteViewModel: NoteViewModel, id: Int, hours: Int,nHour:Int,
+        minute: Int,nMinute:Int
     ) {
-        val c = Calendar.getInstance()
-        val cYear = c.get(Calendar.YEAR)
-        val cMonth = c.get(Calendar.MONTH)
-        val cDay = c.get(Calendar.DAY_OF_MONTH)
         val alarmMgr =
             activity!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(activity, NotifyByDate::class.java)
@@ -188,21 +180,14 @@ class UpcomingAlarms : Fragment() {
         intent.putExtra("name", list.find { note -> note.id == id }?.title)
         val pendingIntent = PendingIntent.getBroadcast(activity, 0, intent, 0)
         val time = Calendar.getInstance()
-        if (Date(year, month, day) < Date(nYear, nMonth, nDay) || Date(nYear, nMonth, nDay) < Date(
-                cYear,
-                cMonth,
-                cDay
-            )
-        ) {
-            Toast.makeText(activity, "Alarm time is illogical", Toast.LENGTH_LONG).show()
-        } else {
-            noteViewModel.updateAlarm(id, nYear, nMonth, nDay)
-            val alarmsDay =
-                (year - nYear) * 360 + ((month - nMonth) * 30).absoluteValue + day - nDay
-            Toast.makeText(activity!!, "$alarmsDay day left to your date",Toast.LENGTH_LONG).show()
-            time.timeInMillis = System.currentTimeMillis()
-            time.add(Calendar.SECOND, (alarmsDay * 24 * 60 * 60)+1)
-            alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
-        }
+        noteViewModel.updateAlarm(id, year, month+1, day)
+        var alarmsDay =
+            ((year - nYear) * 360)+ ((month - nMonth) * 30) + (day - nDay)
+        val upcomingAlarmsDay = alarmsDay
+        alarmsDay= alarmsDay * 24 * 60 * 60 +((((hours*60)+minute)*60)-(((nHour*60)+nMinute)*60))
+        Toast.makeText(activity!!, "$upcomingAlarmsDay day left to your alarm", Toast.LENGTH_LONG).show()
+        time.timeInMillis = System.currentTimeMillis()
+        time.add(Calendar.SECOND,  alarmsDay)
+        alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
     }
 }
