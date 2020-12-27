@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    >
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout2"
@@ -48,6 +47,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/date_button"
                     app:layout_constraintHorizontal_bias="0.97"
                     app:layout_constraintStart_toStartOf="parent"
+                    android:contentDescription="ImageView"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -89,10 +89,11 @@
                     android:id="@+id/radioGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
                     android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/detail_date">
+                    app:layout_constraintTop_toBottomOf="@+id/text_view_detail_date">
 
                     <RadioButton
                         android:id="@+id/radio_1"
@@ -137,7 +138,8 @@
                     android:accessibilityLiveRegion="assertive"
                     android:background="@drawable/text_border"
                     android:ems="10"
-                    android:hint="@string/details"
+                    android:gravity="start"
+                    android:hint="@string/details_hint"
                     android:importantForAutofill="no"
                     android:inputType="textMultiLine|text"
                     android:padding="16dp"
@@ -147,14 +149,48 @@
                     app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
                 <TextView
-                    android:id="@+id/detail_date"
+                    android:id="@+id/text_view_detail_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.03"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/image_view_detail_date"
                     app:layout_constraintTop_toBottomOf="@+id/detail_title" />
+
+                <ImageView
+                    android:id="@+id/image_view_detail_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_baseline_event_note_24"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_view_detail_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/text_view_detail_date"
+                    app:layout_constraintVertical_bias="1.0"
+                    />
+
+                <TextView
+                    android:id="@+id/text_view_alarm_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/detail_title" />
+
+                <ImageView
+                    android:id="@+id/image_view_alarm_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_baseline_access_alarms_24"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_view_alarm_date"
+                    app:layout_constraintEnd_toStartOf="@+id/text_view_alarm_date"
+                    app:layout_constraintTop_toTopOf="@+id/text_view_alarm_date"
+                   />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -187,6 +223,7 @@
                     app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
         </FrameLayout>
 
     </ScrollView>
