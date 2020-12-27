@@ -20,6 +20,7 @@ class NoteViewModel(application: Application) : ViewModel() {
     val editAlarm = MutableLiveData<ArrayList<Int>>(arrayListOf(-1,0,0,0,0,0,0))
     val yearList = arrayListOf<Date>()
     var isCompleted = MutableLiveData<Boolean>(false)
+    var noteImages = MutableLiveData<ArrayList<String>>(arrayListOf())
     //List represent all the user's notes
     var allNote: LiveData<List<Note>?>
 

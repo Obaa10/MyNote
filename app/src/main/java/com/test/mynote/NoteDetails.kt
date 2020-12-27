@@ -2,9 +2,7 @@ package com.test.mynote
 
 import android.Manifest
 import android.app.*
-import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -17,7 +15,6 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
@@ -44,12 +41,18 @@ class NoteDetails : AppCompatActivity() {
         const val EXTRA_REPLY_DATE = "NoteDate"
         const val EXTRA_REPLY_IMAGES = "image"
         private const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1
-        var deleteImage: MutableLiveData<Int?> = MutableLiveData(null)
+        var deleteImage = MutableLiveData<Int>()
     }
 
-    private lateinit var images: MutableLiveData<ArrayList<String>>
-    val date = arrayListOf(0, 0, 0, 0, 0, 0, 0, 0,0,0,0)
+
+    lateinit var noteDate: TextView
+    lateinit var textAlarm: TextView
+    lateinit var alarmImage: ImageView
+    lateinit var dateImage: ImageView
+    val date = arrayListOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
     var hasAlarm = false
+    lateinit var noteViewModel: NoteViewModel
+    var nImages = arrayListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,16 +61,18 @@ class NoteDetails : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
-        images = MutableLiveData(arrayListOf(""))
         val dateButton: ImageButton = findViewById(R.id.date_button)
         val alarmButton: ImageButton = findViewById(R.id.time_button)
+        alarmImage = findViewById(R.id.image_view_alarm_date)
+        dateImage = findViewById(R.id.image_view_detail_date)
         val saveButton: FloatingActionButton = findViewById(R.id.save_button)
         val addImageButton: FloatingActionButton = findViewById(R.id.add_image_button)
         val radioGroup: RadioGroup = findViewById(R.id.radioGroup)
         val noteTitle: EditText = findViewById(R.id.detail_title)
         val noteDetail: EditText = findViewById(R.id.detail_description)
-        val noteDate: TextView = findViewById(R.id.detail_date)
-        val noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
+        noteDate = findViewById(R.id.text_view_detail_date)
+        textAlarm = findViewById(R.id.text_view_alarm_date)
+        noteViewModel = NoteViewModelFactory(application).create(NoteViewModel::class.java)
         val intent = intent
 
         val imageList: RecyclerView = findViewById(R.id.image_list)
@@ -96,6 +101,11 @@ class NoteDetails : AppCompatActivity() {
                     if (it.year != 0) {
                         noteDate.text = "${it.year}/${it.month}/${it.day}"
                         alarmButton.visibility = View.VISIBLE
+                        dateImage.visibility = View.VISIBLE
+                    }
+                    if (it.nYear != 0) {
+                        textAlarm.text = "${it.nYear}/${it.nMonth}/${it.nDay}"
+                        alarmImage.visibility = View.VISIBLE
                     }
                     date[0] = it.year
                     date[1] = it.month
@@ -105,9 +115,8 @@ class NoteDetails : AppCompatActivity() {
                     date[6] = it.nDay
                     date[7] = it.nHours
                     nDate = Date(it.year, it.month, it.year)
-                    if (it.image.size > 0) {
-                        images.value = it.image
-                    }
+                    nImages = it.image
+                    noteViewModel.noteImages.value = it.image
                     when (it.important) {
                         1 -> findViewById<RadioButton>(R.id.radio_1).isChecked = true
                         2 -> findViewById<RadioButton>(R.id.radio_2).isChecked = true
@@ -124,10 +133,12 @@ class NoteDetails : AppCompatActivity() {
                 val show: Any = AlertDialog.Builder(this)
                     .setTitle("You Have To Insert Title")
                     .setMessage("Exit without Save")
-                    .setPositiveButton("No"
+                    .setPositiveButton(
+                        "No"
                     ) { dialog, _ ->
                         dialog.dismiss()
-                    }.setNegativeButton("Exit"
+                    }.setNegativeButton(
+                        "Exit"
                     ) { dialog, _ ->
                         setResult(Activity.RESULT_CANCELED, replyIntent)
                         finish()
@@ -135,7 +146,6 @@ class NoteDetails : AppCompatActivity() {
                     }.show()
             } else {
                 if (isEmpty) {
-                    val imageUri: ArrayList<String> = images.value ?: arrayListOf("")
                     val array: Array<String> = arrayOf(
                         noteTitle.text.toString(),
                         noteDetail.text.toString()
@@ -143,16 +153,15 @@ class NoteDetails : AppCompatActivity() {
                     replyIntent.putExtra(EXTRA_REPLY, array)
                     date[3] = getImportant(radioGroup)
                     replyIntent.putExtra(EXTRA_REPLY_DATE, date)
-                    replyIntent.putExtra(EXTRA_REPLY_IMAGES, imageUri)
+                    replyIntent.putExtra(EXTRA_REPLY_IMAGES, nImages)
                     setResult(Activity.RESULT_OK, replyIntent)
                 } else {
-                    val imageUri: ArrayList<String> = images.value ?: arrayListOf("")
                     noteViewModel.update(
                         Note(
                             noteId,
                             noteTitle.text.toString(),
                             noteDetail.text.toString(),
-                            imageUri,
+                            nImages,
                             date,
                             getImportant(radioGroup),
                             hasAlarm
@@ -164,7 +173,7 @@ class NoteDetails : AppCompatActivity() {
             if (hasAlarm) {
                 val c = Calendar.getInstance()
                 val cYear = c.get(Calendar.YEAR)
-                val cMonth = c.get(Calendar.MONTH)+1
+                val cMonth = c.get(Calendar.MONTH) + 1
                 val cDay = c.get(Calendar.DAY_OF_MONTH)
                 val cHour = c.get(Calendar.HOUR_OF_DAY)
                 val cMinute = c.get(Calendar.MINUTE)
@@ -175,17 +184,16 @@ class NoteDetails : AppCompatActivity() {
                 alarmIntent.putExtra("name", noteTitle.text.toString())
                 val pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0)
                 val time = Calendar.getInstance()
-                if (Date(date[0], date[1], date[2],date[7],date[8]) < Date(date[4],date[5],date[6],date[9],date[10])
-                    || Date(date[4], date[5], date[6]) < Date(cYear, cMonth, cDay)) {
-                } else {
-                    var day =  (date[4]-cYear) * 360 + (((date[5] - cMonth) * 30) + (date[6] - cDay))
-                    val noteDay = day
-                    day = day * 24 * 60 * 60 +((((date[9]*60)+date[10])-((cHour*60)+cMinute)).absoluteValue*60)
-                    time.timeInMillis = System.currentTimeMillis()
-                    Toast.makeText(this, "$noteDay day left to your alarm",Toast.LENGTH_LONG).show()
-                    time.add(Calendar.SECOND, (day))
-                    alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
-                }
+
+                var day = (date[4] - cYear) * 360 + (((date[5] - cMonth) * 30) + (date[6] - cDay))
+                val noteDay = day
+                day =
+                    day * 24 * 60 * 60 + ((((date[9] * 60) + date[10]) - ((cHour * 60) + cMinute)).absoluteValue * 60)
+                time.timeInMillis = System.currentTimeMillis()
+                Toast.makeText(this, "$noteDay day left to your alarm", Toast.LENGTH_LONG).show()
+                time.add(Calendar.SECOND, (day))
+                alarmMgr[AlarmManager.RTC_WAKEUP, time.timeInMillis] = pendingIntent
+
                 noteViewModel.removeAlarm.observe(this) {
                     if (it) {
                         alarmMgr.cancel(pendingIntent)
@@ -213,14 +221,15 @@ class NoteDetails : AppCompatActivity() {
 
         deleteImage.observe(this)
         {
-            if (images.value != null && it != null)
-                images.value!!.removeAt(it)
+            if (it != null) {
+                nImages.removeAt(it)
+                noteViewModel.noteImages.value = nImages
+            }
         }
 
-        images.observe(this)
-        { listOfImages ->
-            val imageBitmap: ArrayList<Bitmap?> = arrayListOf()
-            for (image in listOfImages) {
+        noteViewModel.noteImages.observe(this) {
+            val imageBitmap = arrayListOf<Bitmap>()
+            it.forEach { image ->
                 if (image.isNotEmpty()) {
                     val uri = image.toUri()
                     val parcelFileDescriptor: ParcelFileDescriptor? =
@@ -232,7 +241,7 @@ class NoteDetails : AppCompatActivity() {
                     }
                 }
             }
-            imageListAdapter.submitList(imageBitmap.toList())
+            imageListAdapter.submitList(imageBitmap)
         }
     }
 
@@ -240,11 +249,13 @@ class NoteDetails : AppCompatActivity() {
         val show: Any = AlertDialog.Builder(this)
             .setTitle("Note will not be save")
             .setMessage("Are you sour you want to leave ?")
-            .setPositiveButton("YES"
+            .setPositiveButton(
+                "YES"
             ) { dialog, _ -> // The user wants to leave - so dismiss the dialog and exit
                 finish()
                 dialog.dismiss()
-            }.setNegativeButton("BACK"
+            }.setNegativeButton(
+                "BACK"
             ) { dialog, _ -> // The user is not sure, so you can exit or just stay
                 dialog.dismiss()
             }.show()
@@ -265,13 +276,15 @@ class NoteDetails : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && data != null) {
-            val listOfImages = images.value ?: arrayListOf("")
-            val list = arrayListOf(data.data.toString())
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        if (resultCode == Activity.RESULT_OK && intent != null) {
+            /*val listOfImages = images.value ?: arrayListOf("")
+            val list = arrayListOf(intent.data.toString())
             list.addAll(listOfImages)
-            images.value = list
+            images.value = list*/
+            nImages.add(intent.data.toString())
+            noteViewModel.noteImages.value = nImages
         }
     }
 
@@ -301,7 +314,7 @@ class NoteDetails : AppCompatActivity() {
         startActivityForResult(intent1, 2)
     }
 
-    private fun pickDateTime(isDate : Boolean) {
+    private fun pickDateTime(isDate: Boolean) {
         val currentDateTime = Calendar.getInstance()
         val startYear = currentDateTime.get(Calendar.YEAR)
         val startMonth = currentDateTime.get(Calendar.MONTH)
@@ -311,31 +324,36 @@ class NoteDetails : AppCompatActivity() {
 
         DatePickerDialog(this, DatePickerDialog.OnDateSetListener { _, year, month, day ->
             TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-                if(isDate) {
+                if (isDate) {
                     date[0] = year
-                    date[1] = month+1
+                    date[1] = month + 1
                     date[2] = day
                     date[7] = hour
                     date[8] = minute
-                    hasAlarm=false
-                }
-                else{
+                    if (year != 0) {
+                        noteDate.text = "${date[0]}/${date[1]}/${date[2]}"
+                        dateImage.visibility = View.VISIBLE
+                    }
+                    hasAlarm = false
+                } else {
                     when {
-                        Date(date[0], date[1], date[2],date[7],date[8])
-                                < Date(year,month,day,hour,minute) -> {
+                        Date(date[0], date[1], date[2])
+                                < Date(year, month, day, hour, minute) -> {
                             alarmIllogical(false)
                         }
-                        Date(year,month,day,hour,minute)
-                                < Date(startYear, startMonth, startDay,startHour,startMinute) -> {
+                        Date(year, month, day, hour, minute)
+                                < Date(startYear, startMonth, startDay, startHour, startMinute) -> {
                             alarmIllogical(true)
                         }
                         else -> {
-                            hasAlarm=true
+                            hasAlarm = true
                             date[4] = year
-                            date[5] = month+1
+                            date[5] = month + 1
                             date[6] = day
                             date[9] = hour
                             date[10] = minute
+                            textAlarm.text = "${date[4]}/${date[5]}/${date[6]}"
+                            alarmImage.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -343,14 +361,15 @@ class NoteDetails : AppCompatActivity() {
         }, startYear, startMonth, startDay).show()
     }
 
-    private fun alarmIllogical(before : Boolean){
-        hasAlarm=false
-        val error = if(before) "Alarm is in the past"
+    private fun alarmIllogical(before: Boolean) {
+        hasAlarm = false
+        val error = if (before) "Alarm is in the past"
         else "Alarm is after the note's date"
         val show: Any = AlertDialog.Builder(this)
             .setTitle("Alarm time is illogical")
             .setMessage(error)
-            .setPositiveButton("OK"
+            .setPositiveButton(
+                "OK"
             ) { dialog, _ ->
                 dialog.dismiss()
             }.show()

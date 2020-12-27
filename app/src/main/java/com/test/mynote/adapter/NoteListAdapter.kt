@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
@@ -37,7 +38,7 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
         private val date: TextView = view.findViewById(R.id.date)
         private val detail: TextView = view.findViewById(R.id.card_detail)
         private val deleteButton: ImageButton = view.findViewById(R.id.button)
-        private val cardColor: TextView = view.findViewById(R.id.color)
+        private val cardColor: ImageView = view.findViewById(R.id.color)
         private val cardView: CardView = view.findViewById(R.id.note_card)
 
         fun create(note: Note, noteViewModel: NoteViewModel) {
@@ -75,7 +76,7 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
                 3 -> R.color.very_important
                 else -> R.color.normal
             }
-            cardColor.setBackgroundColor(color)
+            cardColor.setImageResource(color)
 
             itemView.setOnClickListener {
                 val intent = Intent(it.context, NoteDetails::class.java)

@@ -8,7 +8,7 @@
     <string name="dialog_message">Are you sure to delete?</string>
     <string name="save">Save</string>
     <string name="title">Title</string>
-    <string name="details">Details</string>
+    <string name="details_hint">More details</string>
     <string name="empty">No note to show \n To Add new note \n Press +</string>
     <string name="date">%1$d hi</string>
     <string name="delete">Delete</string>
@@ -29,4 +29,6 @@
     <string name="snack_bar_completed_text">Non completed</string>
     <string name="snack_bar_non">Non</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_archived_note_fragment">Archived Notes</string>
+    <string name="text_up_coming_alarms_fragment">Up Coming Alarms</string>
 </resources>

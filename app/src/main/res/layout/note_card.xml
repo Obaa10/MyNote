@@ -26,11 +26,10 @@
     card_view:cardCornerRadius="15dp"
     card_view:cardElevation="10dp">
 
-    <TextView
+    <ImageView
         android:id="@+id/color"
         android:layout_width="10dp"
-        android:layout_height="match_parent"
-        android:background="@color/purple_200" />
+        android:layout_height="match_parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

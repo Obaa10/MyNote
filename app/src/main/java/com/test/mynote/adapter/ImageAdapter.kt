@@ -28,7 +28,6 @@ class ImageAdapter :
         holder.create(image)
         holder.removeButton.setOnClickListener {
             holder.image.setImageDrawable(null)
-            it.visibility = View.INVISIBLE
             NoteDetails.deleteImage.value = position
         }
     }
