@@ -91,6 +91,12 @@ class NotesFragment : Fragment() {
             }
         }
 
+
+        noteViewModel.deleteNote.observe(this){
+            recyclerViewAdapter.notifyItemRemoved(it)
+            noteViewModel.delete(it)
+        }
+
         //Add new note
         addButton.setOnClickListener {
             val intent = Intent(activity, NoteDetails::class.java)

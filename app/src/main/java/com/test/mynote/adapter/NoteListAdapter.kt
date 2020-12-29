@@ -93,7 +93,7 @@ class NoteListAdapter(private val noteViewModel: NoteViewModel) :
                         setPositiveButton(
                             R.string.ok
                         ) { _, _ ->
-                            noteViewModel.delete(note.id)
+                            noteViewModel.deleteNote.value = note.id
                         }
                         setNegativeButton(
                             R.string.cancel

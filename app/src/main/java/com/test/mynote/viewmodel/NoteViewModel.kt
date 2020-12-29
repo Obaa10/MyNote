@@ -23,6 +23,7 @@ class NoteViewModel(application: Application) : ViewModel() {
     var noteImages = MutableLiveData<ArrayList<String>>(arrayListOf())
     //List represent all the user's notes
     var allNote: LiveData<List<Note>?>
+    val deleteNote = MutableLiveData<Int>()
 
     //Initialize the (allNote) List
     init {
