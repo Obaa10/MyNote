@@ -16,4 +16,5 @@
     <color name="very_important">#D50000</color>
     <color name="tabs_layout">#2196F3</color>
     <color name="tabs_layout_button">#0D47A1</color>
+    <color name="isCompleted">#777777</color>
 </resources>

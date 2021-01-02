@@ -27,7 +27,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="@string/text_up_coming_alarms_fragment"
-                    android:textColor="#EDE3E3"
+                    android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -44,8 +44,8 @@
 
     <ImageView
         android:id="@+id/upcoming_background"
-        android:layout_width="180dp"
-        android:layout_height="170dp"
+        android:layout_width="124dp"
+        android:layout_height="128dp"
         android:layout_gravity="center"
         android:layout_margin="90dp"
         android:background="#00FFFFFF"
