@@ -36,6 +36,10 @@ class ArchivedFragment : Fragment() {
             if (it!!.isEmpty()) backGround.visibility = View.VISIBLE
             else backGround.visibility = View.INVISIBLE
         }
+        noteViewModel.deleteArchivedNote.observe(this){
+            noteViewModel.delete(it)
+            println("*****************")
+        }
         return view
     }
 }

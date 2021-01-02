@@ -14,5 +14,6 @@
     <color name="toolbar">#0D47A1</color>
     <color name="action_button">#2196F3</color>
     <color name="very_important">#D50000</color>
-    <color name="tabs_layout">#1976D2</color>
+    <color name="tabs_layout">#2196F3</color>
+    <color name="tabs_layout_button">#0D47A1</color>
 </resources>

@@ -24,6 +24,7 @@ class NoteViewModel(application: Application) : ViewModel() {
     //List represent all the user's notes
     var allNote: LiveData<List<Note>?>
     val deleteNote = MutableLiveData<Int>()
+    val deleteArchivedNote = MutableLiveData<Int>()
 
     //Initialize the (allNote) List
     init {

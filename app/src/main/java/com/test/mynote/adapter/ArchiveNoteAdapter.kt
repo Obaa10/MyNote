@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -17,14 +18,14 @@ import com.test.mynote.viewmodel.NoteViewModel
 import java.util.*
 
 class ArchiveNoteAdapter(private val noteViewModel: NoteViewModel) :
-    ListAdapter<Note, NoteListAdapter.ViewHolder>(NOTES_COMPARATOR) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteListAdapter.ViewHolder {
+    ListAdapter<Note, ArchiveNoteAdapter.ViewHolder>(NOTES_COMPARATOR) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val cardView = LayoutInflater.from(parent.context)
             .inflate(R.layout.note_card, parent, false)
-        return NoteListAdapter.ViewHolder(cardView)
+        return ViewHolder(cardView)
     }
 
-    override fun onBindViewHolder(holder: NoteListAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val note = getItem(position)
         holder.create(note, noteViewModel)
     }
@@ -34,7 +35,7 @@ class ArchiveNoteAdapter(private val noteViewModel: NoteViewModel) :
         private val date: TextView = view.findViewById(R.id.date)
         private val detail: TextView = view.findViewById(R.id.card_detail)
         private val deleteButton: ImageButton = view.findViewById(R.id.button)
-        private val cardColor: TextView = view.findViewById(R.id.color)
+        private val cardColor: ImageView = view.findViewById(R.id.color)
         fun create(note: Note, noteViewModel: NoteViewModel) {
             title.text = note.title
             detail.text = note.detail

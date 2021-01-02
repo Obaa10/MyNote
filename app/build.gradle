@@ -60,6 +60,8 @@ dependencies {
 
     implementation 'com.github.mirrajabi:search-dialog:1.2.4'
 
+    implementation 'eu.long1:spacetablayout:1.0.4'
+
     // UI
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
     implementation "com.google.android.material:material:$rootProject.materialVersion"
